@@ -1,4 +1,4 @@
-package com.cwiztech.config;
+/* package com.cwiztech.config;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -71,4 +71,4 @@ public class EndpointsListener implements ApplicationListener<ContextRefreshedEv
 		HttpEntity<String> entity = new HttpEntity<String>(applicationServices.toString().replace("\"", "'"), headers);
 		restTemplate.exchange(appPath + "microservice", HttpMethod.PUT, entity, String.class);
     }
-}
+} */
