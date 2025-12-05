@@ -39,13 +39,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	 	   private String PROMOTIONPRODCUT_PRICE;
 	 	
 	        @Column(name ="QUANTITY_REQUIRED")
-	  	   private Long QUANTITY_REQUIRED;
+	  	   private long QUANTITY_REQUIRED;
 	      
 	        @Column(name ="QUANTITY_BONUS")
-		  	   private Long QUANTITY_BONUS;
+		  	   private long QUANTITY_BONUS;
 	        
 	        @Column(name ="MAXPURCHASE_LIMIT")
-		  	   private Long MAXPURCHASE_LIMIT;
+		  	   private long MAXPURCHASE_LIMIT;
 	        
 	        @Column(name ="PROMOTIONPRODCUT_NOTES")
 		  	   private String PROMOTIONPRODCUT_NOTES;
