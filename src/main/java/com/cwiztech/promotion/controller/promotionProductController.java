@@ -46,31 +46,19 @@ public class promotionProductController {
 	@Autowired
 	private promotionProductRepository promotionProductRepository;
 	
-	@RequestMapping(method = RequestMethod.GET)
-	public List<promotionProduct> get() {
-		
-		List<promotionProduct> agencies = promotionProductRepository.findAll();
-
-		return agencies;
-	}
-	
-	 @PostMapping("/add")
-	  	public promotionProduct adddata(@RequestBody promotionProduct data) {
-		 
-	  		return promotionProductRepository.save(data) ; 
-	  		
-	  	}
-}
-// nichy waly ko abhi ignore kro ok
-	/*@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity get(@RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
 		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionProduct", null, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
-		List<promotionProduct> promotionProducts = promotionProductRepository.findActive();
+		List<promotionProduct> promotionproducts = promotionProductRepository.findActive();
 
-		return new ResponseEntity(getAPIResponse(promotionProducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
+		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
+
+	}
+}
+// nichy waly ko abhi ignore kro ok
 	
 
 	/*
