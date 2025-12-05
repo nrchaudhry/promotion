@@ -27,10 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cwiztech.promotion.model.promotionProduct;
+import com.cwiztech.promotion.model.PromotionProduct;
 import com.cwiztech.promotion.repository.promotionProductRepository;
 import com.cwiztech.log.apiRequestLog;
-import com.cwiztech.promotion.model.promotionProduct;
 import com.cwiztech.services.ServiceCall;
 import com.cwiztech.token.AccessToken;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,12 +38,12 @@ import com.google.maps.errors.ApiException;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/promotionProduct")
+@RequestMapping("/promotionproduct")
 public class promotionProductController {
 	private static final Logger log = LoggerFactory.getLogger(promotionProductController.class);
 
 	@Autowired
-	private promotionProductRepository promotionProductRepository;
+	private promotionProductRepository promotionproductrepository;
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.GET)
@@ -52,10 +51,51 @@ public class promotionProductController {
 		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionProduct", null, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
-		List<promotionProduct> promotionproducts = promotionProductRepository.findActive();
+		List<PromotionProduct> promotionproducts = promotionproductrepository.findActive();
 
 		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
 
+	}
+
+	String getAPIResponse(List<PromotionProduct> promotionproducts, PromotionProduct promotionproduct, JSONArray Jsonpromotionproducts, JSONObject Jsonpromotionproduct, String message, JSONObject apiRequest, boolean isWithDetail) throws JSONException, JsonProcessingException, ParseException {
+		ObjectMapper mapper = new ObjectMapper();
+		String rtnAPIResponse="Invalid Resonse";
+		
+		if (message != null) {
+			rtnAPIResponse = apiRequestLog.apiRequestErrorLog(apiRequest, "promotionproduct", message).toString();
+		} else {
+			if (promotionproduct != null && isWithDetail == true) {
+				
+				rtnAPIResponse = mapper.writeValueAsString(promotionproduct);
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+				
+			} else if (promotionproducts != null && isWithDetail == true) {
+				if (promotionproducts.size()>0) {
+				}
+				
+				rtnAPIResponse = mapper.writeValueAsString(promotionproducts);
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+            
+	         } else if (promotionproduct != null && isWithDetail == false) {
+					rtnAPIResponse = mapper.writeValueAsString(promotionproduct);
+					apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+
+	        } else if (promotionproducts != null && isWithDetail == false) {
+				rtnAPIResponse = mapper.writeValueAsString(promotionproducts);
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+	                
+			} else if (Jsonpromotionproducts != null) {
+				rtnAPIResponse = Jsonpromotionproducts.toString();
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+
+			} else if (Jsonpromotionproduct != null) {
+				rtnAPIResponse = mapper.writeValueAsString(Jsonpromotionproduct.toString());
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+
+			}
+		}
+		
+		return rtnAPIResponse;
 	}
 }
 // nichy waly ko abhi ignore kro ok
