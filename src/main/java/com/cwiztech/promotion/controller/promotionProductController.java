@@ -1,4 +1,3 @@
-
 package com.cwiztech.promotion.controller;
 
 import java.io.IOException;
@@ -27,10 +26,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cwiztech.log.apiRequestLog;
 import com.cwiztech.promotion.model.PromotionProduct;
 import com.cwiztech.promotion.repository.promotionProductRepository;
-import com.cwiztech.log.apiRequestLog;
-import com.cwiztech.services.ServiceCall;
 import com.cwiztech.token.AccessToken;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,6 +54,8 @@ public class promotionProductController {
 		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
 
 	}
+	
+	
 
 	String getAPIResponse(List<PromotionProduct> promotionproducts, PromotionProduct promotionproduct, JSONArray Jsonpromotionproducts, JSONObject Jsonpromotionproduct, String message, JSONObject apiRequest, boolean isWithDetail) throws JSONException, JsonProcessingException, ParseException {
 		ObjectMapper mapper = new ObjectMapper();

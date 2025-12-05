@@ -19,7 +19,6 @@ public class PromotionProduct {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long PROMOTIONPRODCUT_ID;
 
-
 	@Column(name ="PROMOTION_ID")
 	private long PROMOTION_ID;
 
@@ -28,7 +27,7 @@ public class PromotionProduct {
 
 
 	@Column(name ="PRODUCT_ID")
-	private long PRODUCT_ID;
+	private Long PRODUCT_ID;
 
 	@Transient
 	private String PRODUCT_DETAIL;
@@ -41,10 +40,10 @@ public class PromotionProduct {
 	private Long QUANTITY_REQUIRED;
 
 	@Column(name ="QUANTITY_BONUS")
-	private long QUANTITY_BONUS;
+	private Long QUANTITY_BONUS;
 
 	@Column(name ="MAXPURCHASE_LIMIT")
-	private long MAXPURCHASE_LIMIT;
+	private Long MAXPURCHASE_LIMIT;
 
 	@Column(name ="PROMOTIONPRODCUT_NOTES")
 	private String PROMOTIONPRODCUT_NOTES;
@@ -80,11 +79,11 @@ public class PromotionProduct {
 		PROMOTION_DETAIL = pROMOTION_DETAIL;
 	}
 
-	public long getPRODUCT_ID() {
+	public Long getPRODUCT_ID() {
 		return PRODUCT_ID;
 	}
 
-	public void setPRODUCT_ID(long pRODUCT_ID) {
+	public void setPRODUCT_ID(Long pRODUCT_ID) {
 		PRODUCT_ID = pRODUCT_ID;
 	}
 
@@ -151,30 +150,5 @@ public class PromotionProduct {
 	public void setMODIFIED_BY(String mODIFIED_BY) {
 		MODIFIED_BY = mODIFIED_BY;
 	}
-
-	public String getMODIFIED_WHEN() {
-		return MODIFIED_WHEN;
-	}
-
-	public void setMODIFIED_WHEN(String mODIFIED_WHEN) {
-		MODIFIED_WHEN = mODIFIED_WHEN;
-	}
-
-	public String getMODIFIED_WORKSTATION() {
-		return MODIFIED_WORKSTATION;
-	}
-
-	public void setMODIFIED_WORKSTATION(String mODIFIED_WORKSTATION) {
-		MODIFIED_WORKSTATION = mODIFIED_WORKSTATION;
-	}
-
-	@JsonIgnore
-	@Column(name ="MODIFIED_WHEN")
-	private String MODIFIED_WHEN;
-
-	@JsonIgnore
-	@Column(name ="MODIFIED_WORKSTATION")
-	private String MODIFIED_WORKSTATION;
-
 
 }
