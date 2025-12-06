@@ -68,17 +68,15 @@ public class promotionProductController {
 		return new ResponseEntity(getAPIResponse(null, promotionproduct, null, null, null, apiRequest, true), HttpStatus.OK);
 	}
 	
-
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity insert(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
-			throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionProduct", data, null, headToken);
-		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
-
-		return insertupdateAll(null, new JSONObject(data), apiRequest);
-	}
+//	@SuppressWarnings({ "unchecked", "rawtypes" })
+//	@RequestMapping(method = RequestMethod.POST)
+//	public ResponseEntity insert(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
+//			throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
+//		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionProduct", data, null, headToken);
+//		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
+//
+//		return insertupdateAll(null, new JSONObject(data), apiRequest);
+//	}
 	
 
 	
