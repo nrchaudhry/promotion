@@ -30,58 +30,58 @@ import org.slf4j.LoggerFactory;
 @RequestMapping("/promotion")
 public class promotionController {
 
-    private static final Logger log = LoggerFactory.getLogger(promotionController.class);
+	private static final Logger log = LoggerFactory.getLogger(promotionController.class);
 
-    @Autowired
-    private promotionRepository promotionrepository;
+	@Autowired
+	private promotionRepository promotionrepository;
 
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<String> get(@RequestHeader(value = "Authorization") String headToken,
-                                      @RequestHeader(value = "LimitGrant") String LimitGrant)
-            throws JsonProcessingException, JSONException, ParseException {
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<String> get(@RequestHeader(value = "Authorization") String headToken,
+			@RequestHeader(value = "LimitGrant") String LimitGrant)
+					throws JsonProcessingException, JSONException, ParseException {
+		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotion", null, null, headToken);
+		if (apiRequest.has("error")) {
+			return new ResponseEntity<>(apiRequest.toString(), HttpStatus.OK);
+		}
 
-        JSONObject apiRequest = AccessToken.checkToken("GET", "/promotion", null, null, headToken);
-        if (apiRequest.has("error")) {
-            return new ResponseEntity<>(apiRequest.toString(), HttpStatus.OK);
-        }
+		List<PromotionModel> promotion = promotionrepository.findActive();
+		String body = getAPIResponse(promotion, null, null, null, null, apiRequest, true);
 
-        List<PromotionModel> promotion = promotionrepository.findActive();
-        String body = getAPIResponse(promotion, null, null, null, null, apiRequest, true);
-        return new ResponseEntity<>(body, HttpStatus.OK);
-    }
+		return new ResponseEntity<>(body, HttpStatus.OK);
+	}
 
-    String getAPIResponse(List<PromotionModel> PromotionModels, PromotionModel promotion, JSONArray Jsonpromotions,
-                          JSONObject JsonPromotion, String message, JSONObject apiRequest, boolean isWithDetail)
-            throws JSONException, JsonProcessingException, ParseException {
+	String getAPIResponse(List<PromotionModel> PromotionModels, PromotionModel promotion, JSONArray Jsonpromotions,
+			JSONObject JsonPromotion, String message, JSONObject apiRequest, boolean isWithDetail)
+					throws JSONException, JsonProcessingException, ParseException {
 
-        ObjectMapper mapper = new ObjectMapper();
-        String rtnAPIResponse = "Invalid Response";
+		ObjectMapper mapper = new ObjectMapper();
+		String rtnAPIResponse = "Invalid Response";
 
-        if (message != null) {
-            rtnAPIResponse = apiRequestLog.apiRequestErrorLog(apiRequest, "promotion", message).toString();
-        } else {
-            if (promotion != null && isWithDetail) {
-                rtnAPIResponse = mapper.writeValueAsString(promotion);
-                apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+		if (message != null) {
+			rtnAPIResponse = apiRequestLog.apiRequestErrorLog(apiRequest, "promotion", message).toString();
+		} else {
+			if (promotion != null && isWithDetail) {
+				rtnAPIResponse = mapper.writeValueAsString(promotion);
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-            } else if (PromotionModels != null && isWithDetail) {
-                rtnAPIResponse = mapper.writeValueAsString(PromotionModels);
-                apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+			} else if (PromotionModels != null && isWithDetail) {
+				rtnAPIResponse = mapper.writeValueAsString(PromotionModels);
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-            } else if (promotion != null && !isWithDetail) {
-                rtnAPIResponse = mapper.writeValueAsString(promotion);
-                apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+			} else if (promotion != null && !isWithDetail) {
+				rtnAPIResponse = mapper.writeValueAsString(promotion);
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-            } else if (PromotionModels != null && !isWithDetail) {
-                rtnAPIResponse = mapper.writeValueAsString(PromotionModels);
-                apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+			} else if (PromotionModels != null && !isWithDetail) {
+				rtnAPIResponse = mapper.writeValueAsString(PromotionModels);
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-            } else if (Jsonpromotions != null) {
-                rtnAPIResponse = Jsonpromotions.toString();
-                apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
-            }
-        }
+			} else if (Jsonpromotions != null) {
+				rtnAPIResponse = Jsonpromotions.toString();
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+			}
+		}
 
-        return rtnAPIResponse;
-    }
+		return rtnAPIResponse;
+	}
 }
