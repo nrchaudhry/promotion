@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cwiztech.log.apiRequestLog;
-import com.cwiztech.promotion.model.PromotionModel;
+import com.cwiztech.promotion.model.Promotion;
 import com.cwiztech.promotion.repository.promotionRepository;
 import com.cwiztech.token.AccessToken;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -44,13 +44,13 @@ public class promotionController {
 			return new ResponseEntity<>(apiRequest.toString(), HttpStatus.OK);
 		}
 
-		List<PromotionModel> promotion = promotionrepository.findActive();
+		List<Promotion> promotion = promotionrepository.findActive();
 		String body = getAPIResponse(promotion, null, null, null, null, apiRequest, true);
 
 		return new ResponseEntity<>(body, HttpStatus.OK);
 	}
 
-	String getAPIResponse(List<PromotionModel> PromotionModels, PromotionModel promotion, JSONArray Jsonpromotions,
+	String getAPIResponse(List<Promotion> Promotions, Promotion promotion, JSONArray Jsonpromotions,
 			JSONObject JsonPromotion, String message, JSONObject apiRequest, boolean isWithDetail)
 					throws JSONException, JsonProcessingException, ParseException {
 
@@ -64,16 +64,16 @@ public class promotionController {
 				rtnAPIResponse = mapper.writeValueAsString(promotion);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (PromotionModels != null && isWithDetail) {
-				rtnAPIResponse = mapper.writeValueAsString(PromotionModels);
+			} else if (Promotions != null && isWithDetail) {
+				rtnAPIResponse = mapper.writeValueAsString(Promotions);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (promotion != null && !isWithDetail) {
 				rtnAPIResponse = mapper.writeValueAsString(promotion);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (PromotionModels != null && !isWithDetail) {
-				rtnAPIResponse = mapper.writeValueAsString(PromotionModels);
+			} else if (Promotions != null && !isWithDetail) {
+				rtnAPIResponse = mapper.writeValueAsString(Promotions);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (Jsonpromotions != null) {

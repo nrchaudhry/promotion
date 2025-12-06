@@ -1,7 +1,5 @@
 package com.cwiztech.promotion.model;
 
-
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,9 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="tblpromotion")
-
-public class PromotionModel {
-	
+public class Promotion {
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	@Column(name = "PROMOTION_ID")
