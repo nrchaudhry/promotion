@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PromotionApplicationTests {
+class SpringmicroserviceApplicationTests {
 
 	@Test
 	void contextLoads() {
