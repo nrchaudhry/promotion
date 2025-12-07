@@ -71,8 +71,7 @@ public class promotionProductController {
 
 		return new ResponseEntity(getAPIResponse(null, promotionproduct, null, null, null, apiRequest, true), HttpStatus.OK);
 	}
-	
-<<<<<<< HEAD
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/remove/{id}", method = RequestMethod.GET)
 	public ResponseEntity remove(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
@@ -88,28 +87,12 @@ public class promotionProductController {
 
 
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity insert(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
-			throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionProduct", data, null, headToken);
-		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
-		return insertupdateAll(null, new JSONObject(data), apiRequest);
+	private ResponseEntity insertupdateAll(Object object, JSONObject promotionProduct, JSONObject apiRequest) {
+		// TODO Auto-generated method stub
+		return null;
 	}
-	 
-=======
-//	@SuppressWarnings({ "unchecked", "rawtypes" })
-//	@RequestMapping(method = RequestMethod.POST)
-//	public ResponseEntity insert(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
-//			throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
-//		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionProduct", data, null, headToken);
-//		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
-//
-//		return insertupdateAll(null, new JSONObject(data), apiRequest);
-//	}
-	
->>>>>>> 9de7f74472e651ba35c84812b7167dac13665383
+
 
 	String getAPIResponse(List<PromotionProduct> promotionproducts, PromotionProduct promotionproduct, JSONArray Jsonpromotionproducts, JSONObject Jsonpromotionproduct, String message, JSONObject apiRequest, boolean isWithDetail) throws JSONException, JsonProcessingException, ParseException {
 		ObjectMapper mapper = new ObjectMapper();
@@ -155,106 +138,7 @@ public class promotionProductController {
 	
 	}
 	
-	List<PromotionProduct> promotionProducts = new ArrayList<PromotionProduct>();
-	JSONObject jsonObj = new JSONObject(data);
-
-	JSONArray searchObject = new JSONArray();
-	List<Integer> customershop_IDS = new ArrayList<Integer>();
-	List<Integer> saleorderpayment_IDS = new ArrayList<Integer>(); 
-	List<Integer> creditmemo_IDS = new ArrayList<Integer>(); 
-
-	customershop_IDS . add((int) 0);
-	saleorderpayment_IDS.add((int) 0);
-	creditmemo_IDS.add((int) 0);
-
-	long customershop_ID = 0, saleorderpayment_ID = 0, creditmemo_ID = 0, promotionProductstatus_ID = 0, promotionProductdate = 0;
-	String promotionProduct_DATEFROM="", promotionProduct_DATETO="";
-
-	boolean isWithDetail = true;
-	if (jsonObj.has("iswithdetail") && !jsonObj.isNull("iswithdetail")) {
-		isWithDetail = jsonObj.getBoolean("iswithdetail");
-	}
-	jsonObj.put("iswithdetail", false);
-
-	if (jsonObj.has("customershop_ID") && !jsonObj.isNull("customershop_ID") && jsonObj.getLong("customershop_ID") != 0) {
-		customershop_ID = jsonObj.getLong("customershop_ID");
-		customershop_IDS.add((int) customershop_ID);
-	} else if (jsonObj.has("customershop") && !jsonObj.isNull("customershop") && jsonObj.getLong("customershop") != 0) {
-		String headToken;
-		if (isWithDetail == true) {
-			searchObject = new JSONArray(ServiceCall.POST("customershop/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
-		} else {
-			searchObject = new JSONArray(ServiceCall.POST("customershop/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
-		}
-
-		customershop_ID = searchObject.length();
-		for (int i=0; i<searchObject.length(); i++) {
-			customershop_IDS.add((int) searchObject.getJSONObject(i).getLong("customershop_ID"));
-		}
-	}
-
-	if (jsonObj.has("saleorderpayment_ID") && !jsonObj.isNull("saleorderpayment_ID") && jsonObj.getLong("saleorderpayment_ID") != 0) {
-		saleorderpayment_ID = jsonObj.getLong("saleorderpayment_ID");
-		saleorderpayment_IDS.add((int) saleorderpayment_ID);
-	} else if (jsonObj.has("saleorderpayment") && !jsonObj.isNull("saleorderpayment") && jsonObj.getLong("saleorderpayment") != 0) {
-		String headToken;
-		if (isWithDetail == true) {
-			searchObject = new JSONArray(ServiceCall.POST("saleorderpayment/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
-		} else {
-			searchObject = new JSONArray(ServiceCall.POST("saleorderpayment/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
-		}
-
-		saleorderpayment_ID = searchObject.length();
-		for (int i=0; i<searchObject.length(); i++) {
-			saleorderpayment_IDS.add((int) searchObject.getJSONObject(i).getLong("saleorderpayment_ID"));
-		}
-	}
-
-	if (jsonObj.has("creditmemo_ID") && !jsonObj.isNull("creditmemo_ID") && jsonObj.getLong("creditmemo_ID") != 0) {
-		creditmemo_ID = jsonObj.getLong("creditmemo_ID");
-		creditmemo_IDS.add((int) creditmemo_ID);
-	} else if (jsonObj.has("creditmemo") && !jsonObj.isNull("creditmemo") && jsonObj.getLong("creditmemo") != 0) {
-		String headToken;
-		if (isWithDetail == true) {
-			searchObject = new JSONArray(ServiceCall.POST("creditmemo/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, false));
-		} else {
-			searchObject = new JSONArray(ServiceCall.POST("creditmemo/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, false));
-		}
-
-		creditmemo_ID = searchObject.length();
-		for (int i=0; i<searchObject.length(); i++) {
-			creditmemo_IDS.add((int) searchObject.getJSONObject(i).getLong("creditmemo_ID"));
-		}
-	}
-
-	if (jsonObj.has("promotionProductstatus_ID") && !jsonObj.isNull("promotionProductstatus_ID"))
-		promotionProductstatus_ID = jsonObj.getLong("promotionProductstatus_ID");
 	
-	else if (jsonObj.has("promotionProductstatus_CODE") && !jsonObj.isNull("promotionProductstatus_CODE")) {
-		JSONObject promotionProductstatus = new JSONObject(ServiceCall.POST("lookup/bycode", "{entityname: 'promotionProductSTATUS', code: "+jsonObj.getString("promotionProductstatus_CODE")+"}", apiRequest.getString("access_TOKEN"), true));
-		if (promotionProductstatus != null)
-			promotionProductstatus_ID = promotionProductstatus.getLong("id");
-	}
-
-	if (jsonObj.has("promotionProduct_DATE") && !jsonObj.isNull("promotionProduct_DATE")) {
-		promotionProductdate = 1;
-		promotionProduct_DATEFROM = jsonObj.getString("promotionProduct_DATE");
-		promotionProduct_DATETO = jsonObj.getString("promotionProduct_DATE");
-	} else if (jsonObj.has("promotionProduct_DATEFROM") && !jsonObj.isNull("promotionProduct_DATEFROM") && jsonObj.has("promotionProduct_DATETO") && !jsonObj.isNull("promotionProduct_DATETO")) {
-		promotionProductdate = 1;
-		promotionProduct_DATEFROM = jsonObj.getString("promotionProduct_DATEFROM");
-		promotionProduct_DATETO = jsonObj.getString("promotionProduct_DATETO");
-	} else if (jsonObj.has("promotionProduct_DATEFROM") && !jsonObj.isNull("promotionProduct_DATEFROM")) {
-		promotionProductdate = 1;
-		promotionProduct_DATEFROM = jsonObj.getString("promotionProduct_DATEFROM");
-		promotionProduct_DATETO = jsonObj.getString("promotionProduct_DATEFROM");
-	} else if (jsonObj.has("promotionProduct_DATETO") && !jsonObj.isNull("promotionProduct_DATETO")) {
-		promotionProductdate = 1;
-		promotionProduct_DATEFROM = jsonObj.getString("promotionProduct_DATETO");
-		promotionProduct_DATETO = jsonObj.getString("promotionProduct_DATETO");
-	}
-
-  }
 }
 /*
 
