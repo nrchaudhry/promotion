@@ -72,6 +72,7 @@ public class promotionProductController {
 		return new ResponseEntity(getAPIResponse(null, promotionproduct, null, null, null, apiRequest, true), HttpStatus.OK);
 	}
 	
+<<<<<<< HEAD
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/remove/{id}", method = RequestMethod.GET)
 	public ResponseEntity remove(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
@@ -97,6 +98,18 @@ public class promotionProductController {
 		return insertupdateAll(null, new JSONObject(data), apiRequest);
 	}
 	 
+=======
+//	@SuppressWarnings({ "unchecked", "rawtypes" })
+//	@RequestMapping(method = RequestMethod.POST)
+//	public ResponseEntity insert(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
+//			throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
+//		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionProduct", data, null, headToken);
+//		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
+//
+//		return insertupdateAll(null, new JSONObject(data), apiRequest);
+//	}
+	
+>>>>>>> 9de7f74472e651ba35c84812b7167dac13665383
 
 	String getAPIResponse(List<PromotionProduct> promotionproducts, PromotionProduct promotionproduct, JSONArray Jsonpromotionproducts, JSONObject Jsonpromotionproduct, String message, JSONObject apiRequest, boolean isWithDetail) throws JSONException, JsonProcessingException, ParseException {
 		ObjectMapper mapper = new ObjectMapper();

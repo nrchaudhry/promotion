@@ -44,13 +44,13 @@ public class promotionController {
 			return new ResponseEntity<>(apiRequest.toString(), HttpStatus.OK);
 		}
 
-		List<Promotion> promotion = promotionrepository.findActive();
-		String body = getAPIResponse(promotion, null, null, null, null, apiRequest, true);
+		List<Promotion> promotions = promotionrepository.findActive();
+		String body = getAPIResponse(promotions, null, null, null, null, apiRequest, true);
 
 		return new ResponseEntity<>(body, HttpStatus.OK);
 	}
 
-	String getAPIResponse(List<Promotion> Promotions, Promotion promotion, JSONArray Jsonpromotions,
+	String getAPIResponse(List<Promotion> promotions, Promotion promotion, JSONArray Jsonpromotions,
 			JSONObject JsonPromotion, String message, JSONObject apiRequest, boolean isWithDetail)
 					throws JSONException, JsonProcessingException, ParseException {
 
@@ -64,16 +64,16 @@ public class promotionController {
 				rtnAPIResponse = mapper.writeValueAsString(promotion);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (Promotions != null && isWithDetail) {
-				rtnAPIResponse = mapper.writeValueAsString(Promotions);
+			} else if (promotions != null && isWithDetail) {
+				rtnAPIResponse = mapper.writeValueAsString(promotions);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (promotion != null && !isWithDetail) {
 				rtnAPIResponse = mapper.writeValueAsString(promotion);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (Promotions != null && !isWithDetail) {
-				rtnAPIResponse = mapper.writeValueAsString(Promotions);
+			} else if (promotions != null && !isWithDetail) {
+				rtnAPIResponse = mapper.writeValueAsString(promotions);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (Jsonpromotions != null) {

@@ -131,6 +131,7 @@ public class Promotion {
 		ISACTIVE = iSACTIVE;
 	}
 
+	@JsonIgnore
 	public Long getMODIFIED_BY() {
 		return MODIFIED_BY;
 	}
@@ -139,6 +140,7 @@ public class Promotion {
 		MODIFIED_BY = mODIFIED_BY;
 	}
 
+	@JsonIgnore
 	public String getMODIFIED_WHEN() {
 		return MODIFIED_WHEN;
 	}
@@ -147,6 +149,7 @@ public class Promotion {
 		MODIFIED_WHEN = mODIFIED_WHEN;
 	}
 
+	@JsonIgnore
 	public String getMODIFIED_WORKSTATION() {
 		return MODIFIED_WORKSTATION;
 	}
@@ -154,7 +157,4 @@ public class Promotion {
 	public void setMODIFIED_WORKSTATION(String mODIFIED_WORKSTATION) {
 		MODIFIED_WORKSTATION = mODIFIED_WORKSTATION;
 	}
-
-	
-
 }
