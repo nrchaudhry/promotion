@@ -45,7 +45,7 @@ public class promotionController {
 		}
 
 		List<Promotion> promotions = promotionrepository.findActive();
-		String body = getAPIResponse(promotions, null, null, null, null, apiRequest, true);
+		String body = getAPIResponse(promotions, null, null, null, null, apiRequest, false);
 
 		return new ResponseEntity<>(body, HttpStatus.OK);
 	}
