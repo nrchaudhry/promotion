@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,11 +36,15 @@ public class promotionController {
 	@Autowired
 	private promotionRepository promotionrepository;
 
+	
+	// will only display the ones who are Active "Y"
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<String> get(@RequestHeader(value = "Authorization") String headToken,
 			@RequestHeader(value = "LimitGrant") String LimitGrant)
 					throws JsonProcessingException, JSONException, ParseException {
+		
 		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotion", null, null, headToken);
+		
 		if (apiRequest.has("error")) {
 			return new ResponseEntity<>(apiRequest.toString(), HttpStatus.OK);
 		}
@@ -49,7 +54,32 @@ public class promotionController {
 
 		return new ResponseEntity<>(body, HttpStatus.OK);
 	}
+	// will display every piece of data in database
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping(value = "/all", method = RequestMethod.GET)
+	public ResponseEntity getAll(@RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotion/all", null, null, headToken);
+		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
+		List<Promotion> promotions = promotionrepository.findAll();
+		
+		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public ResponseEntity getOne(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotion/"+id, null, null, headToken);
+		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
+
+		Promotion promotion = promotionrepository.findOne(id);
+		
+		return new ResponseEntity(getAPIResponse(null, promotion, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
+	}
+
+	
+	
+	// getAPIrequest function
 	String getAPIResponse(List<Promotion> promotions, Promotion promotion, JSONArray Jsonpromotions,
 			JSONObject JsonPromotion, String message, JSONObject apiRequest, boolean isWithDetail)
 					throws JSONException, JsonProcessingException, ParseException {
