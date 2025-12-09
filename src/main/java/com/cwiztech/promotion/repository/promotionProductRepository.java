@@ -151,6 +151,10 @@ public interface promotionProductRepository extends JpaRepository<PromotionProdu
 		    @Param("HOLD_ID") Long HOLD_ID,
 		    @Param("TAXCODE_ID") Long TAXCODE_ID, @Param("TAXCODE_IDS") List<Integer> TAXCODE_IDS,
 			@Param("CURRENCY_ID") Long PERSONSTATUS_ID);
+
+	public List<PromotionProduct> findAllByAdvancedSearch(long promotionproduct_ID, List<Integer> promotionproduct_IDS);
+
+	public List<PromotionProduct> findByAdvancedSearch(long promotionproduct_ID, List<Integer> promotionproduct_IDS);
 }
 
 
