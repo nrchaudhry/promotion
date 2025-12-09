@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.cwiztech.promotion.model.PromotionProduct;
 import com.cwiztech.log.apiRequestLog;
 import com.cwiztech.promotion.model.PromotionProduct;
 import com.cwiztech.promotion.repository.promotionProductRepository;
@@ -40,7 +40,7 @@ import com.google.maps.errors.ApiException;
 @RestController
 @CrossOrigin
 @RequestMapping("/promotionproduct")
-public class promotionProductController {
+public class promotionProductController<promotionproduct> {
 	private static final Logger log = LoggerFactory.getLogger(promotionProductController.class);
 
 	private static final JSONTokener data = null;
@@ -48,6 +48,7 @@ public class promotionProductController {
 	@Autowired
 	private promotionProductRepository promotionproductrepository;
 	
+	//is ma pori list call kry gy
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity get(@RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
@@ -59,11 +60,36 @@ public class promotionProductController {
 		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
 
 	}
+
+	//is ma srif aik id find kry gy according to below API 2nd last line 
+	//aur return ma humne first ma null isi liy diya kyu ky hume list of product ni chiy 
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping(value = "/all", method = RequestMethod.GET)
+	public ResponseEntity getAll(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
+		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionProduct/" + id, null, null, headToken);
+		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
+
+		PromotionProduct promotionproduct = promotionproductrepository.findOne(id);
+
+		return new ResponseEntity(getAPIResponse(null, promotionproduct, null, null, null, apiRequest, true), HttpStatus.OK);
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity getOne(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
+		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionProduct/" + id, null, null, headToken);
+		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
+
+		PromotionProduct promotionproduct = promotionproductrepository.findOne(id);
+
+		return new ResponseEntity(getAPIResponse(null, promotionproduct, null, null, null, apiRequest, true), HttpStatus.OK);
+	}
+
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping(value = "/ids", method = RequestMethod.GET)
+	public ResponseEntity callByIds(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
 		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionProduct/" + id, null, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
@@ -79,21 +105,203 @@ public class promotionProductController {
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
 		JSONObject promotionProduct = new JSONObject();
-		promotionProduct.put("customer_ID", id);
+		promotionProduct.put("PROMOTIONPRODUCT_ID", id);
 		promotionProduct.put("isactive", "N");
 
+		
 		return insertupdateAll(null, promotionProduct, apiRequest);
 	}
 
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public ResponseEntity update(@PathVariable Long id, @RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
+			throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
+		JSONObject apiRequest = AccessToken.checkToken("PUT", "/promotionProduct/"+id, data, null, headToken);
+		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
+		JSONObject jsonObj = new JSONObject(data);
+		jsonObj.put("promotionproduct_ID", id);
 
-	private ResponseEntity insertupdateAll(Object object, JSONObject promotionProduct, JSONObject apiRequest) {
-		// TODO Auto-generated method stub
-		return null;
+		return insertupdateAll(null, jsonObj, apiRequest);
+	}
+	
+
+	@SuppressWarnings({ "unchecked", "rawtypes", "null" })
+	public ResponseEntity insertupdateAll(JSONArray jsonpromotionproducts, JSONObject jsonpromotionproduct, JSONObject apiRequest) throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
+		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = new Date();
+
+		List<PromotionProduct> promotionproducts = new ArrayList<PromotionProduct>();
+		if (jsonpromotionproduct!= null) {
+			jsonpromotionproducts = new JSONArray();
+			jsonpromotionproducts.put(jsonpromotionproduct);
+		}
+
+		for (int i=0; i<jsonpromotionproduct.length(); i++) {
+			JSONObject jsonObj = jsonpromotionproducts.getJSONObject(i);
+			PromotionProduct promotionproduct = new  PromotionProduct();
+			long id=0; 
+			
+			if (jsonObj.has("PROMOTIONPRODCUT_ID")) {
+				id = jsonObj.getLong("PROMOTIONPRODCUT_ID");
+				if (id!=0) {
+					promotionproduct = promotionproductrepository.findOne(id);
+				}
+			}
+
+			if (id == 0) {
+				if (!jsonObj.has("PROMOTIONPRODCUT_ID") && jsonObj.isNull("PROMOTIONPRODCUT_ID")) {
+					return new ResponseEntity(getAPIResponse(null, null , null, null, "PROMOTIONPRODCUT_ID are missing", apiRequest, true), HttpStatus.OK);
+				}
+			}
+
+			if (jsonObj.has("PROMOTION_ID") && !jsonObj.isNull("PROMOTION_ID"))
+				promotionproduct.setPROMOTION_ID(jsonObj.getLong("PROMOTION_ID"));
+
+			if (jsonObj.has("PRODUCT_ID") && !jsonObj.isNull("PRODUCT_ID"))
+				promotionproduct.setPRODUCT_ID(jsonObj.getLong("PRODUCT_ID"));
+
+			if (jsonObj.has("PROMOTIONPRODCUT_PRICE") && !jsonObj.isNull("PROMOTIONPRODCUT_PRICE"))
+				promotionproduct.setPROMOTIONPRODCUT_PRICE(jsonObj.getString("PROMOTIONPRODCUT_PRICE"));
+
+			if (jsonObj.has("QUANTITY_REQUIRED") && !jsonObj.isNull("QUANTITY_REQUIRED"))
+				promotionproduct.setQUANTITY_REQUIRED(jsonObj.getString("QUANTITY_REQUIRED"));
+
+			if (jsonObj.has("QUANTITY_BONUS") && !jsonObj.isNull("QUANTITY_BONUS"))
+				promotionproduct.setQUANTITY_BONUS(jsonObj.getString("QUANTITY_BONUS"));
+
+			if (jsonObj.has("MAXPURCHASE_LIMIT") && !jsonObj.isNull("MAXPURCHASE_LIMIT"))
+				promotionproduct.setMAXPURCHASE_LIMIT(jsonObj.getLong("MAXPURCHASE_LIMIT"));
+			
+
+			if (jsonObj.has("PROMOTIONPRODCUT_NOTES") && !jsonObj.isNull("PROMOTIONPRODCUT_NOTES"))
+				promotionproduct.setPROMOTIONPRODCUT_NOTES(jsonObj.getString("PROMOTIONPRODCUT_NOTES"));
+			
+			
+
+			if (id == 0)
+				promotionproduct.setISACTIVE("Y");
+			else if (jsonObj.has("isactive"))
+				promotionproduct.setISACTIVE(jsonObj.getString("isactive"));
+
+			promotionproduct.setMODIFIED_BY(apiRequest.getString("request_ID"));
+			promotionproduct.setMODIFIED_WORKSTATION(apiRequest.getString("log_WORKSTATION"));
+			promotionproduct.setMODIFIED_WHEN(dateFormat1.format(date));
+
+			promotionproduct = promotionproductrepository.saveAndFlush(promotionproduct);
+			promotionproducts.add(promotionproduct);
+		}
+
+		ResponseEntity responseentity;
+		if (jsonpromotionproduct != null)
+			responseentity = new ResponseEntity(getAPIResponse(null, promotionproducts.get(0), null, null, null, apiRequest, true), HttpStatus.OK);
+		else
+			responseentity = new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
+		return responseentity;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping(value = "/ids", method = RequestMethod.POST)
+	public ResponseEntity getByIDs(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
+			throws JsonProcessingException, JSONException, ParseException {
+		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionproduct/ids", data, null, headToken);
+		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.BAD_REQUEST);
+
+		List<Integer> promotionproduct_IDS = new ArrayList<Integer>(); 
+		JSONObject jsonObj = new JSONObject(data);
+		JSONArray jsonpromotionproducts = jsonObj.getJSONArray("promotionproducts");
+		for (int i=0; i<jsonpromotionproducts.length(); i++) {
+			promotionproduct_IDS.add((Integer) jsonpromotionproducts.get(i));
+		}
+		
+		List<PromotionProduct> promotionproducts = new ArrayList<PromotionProduct>();
+		if (jsonpromotionproducts.length()>0)
+			
+			promotionproducts = promotionproductrepository.findByIDs(promotionproduct_IDS);
+		
+		
+		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
 
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping( method = RequestMethod.PUT)
+	public ResponseEntity updateAll(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
+			throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
+		JSONObject apiRequest = AccessToken.checkToken("PUT", "/promotionProduct", data, null, headToken);
+		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
+
+		return insertupdateAll(new JSONArray(data), null, apiRequest);
+	}
+	
+
+
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity delete(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionproduct/"+id, null, null, headToken);
+		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.BAD_REQUEST);
+
+		PromotionProduct promotionproduct = promotionproductrepository.findOne(id);
+		promotionproductrepository.delete(promotionproduct);
+		
+		return new ResponseEntity(getAPIResponse(null, promotionproduct, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
+	}
+
+	@SuppressWarnings({ "rawtypes" })
+	@RequestMapping(value = "/search", method = RequestMethod.POST)
+	public ResponseEntity getBySearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+		return BySearch(data, true, headToken, LimitGrant);
+	}
+
+	@SuppressWarnings({ "rawtypes" })
+	@RequestMapping(value = "/search/all", method = RequestMethod.POST)
+	public ResponseEntity getAllBySearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+		return BySearch(data, false, headToken, LimitGrant);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public ResponseEntity BySearch(String data, boolean active, String headToken, String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionproduct/search" + ((active == true) ? "" : "/all"), data, null, headToken);
+		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.BAD_REQUEST);
+
+		JSONObject jsonObj = new JSONObject(data);
+
+		List<PromotionProduct> promotionproducts = ((active == true)
+				? promotionproductrepository.findBySearch("%" + jsonObj.getString("search") + "%")
+				: promotionproductrepository.findAllBySearch("%" + jsonObj.getString("search") + "%"));
+		
+		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
+	}
+
+	
+	// this is jsonobj method for insert and update
+	// If an ID exists → Update record
+	// If ID does not exist → Insert new record
+	
+	private ResponseEntity insertupdateAll(Object object, JSONObject jsonObject, JSONObject apiRequest) {
+		
+		// TODO Auto-generated method stub
+		
+	       // ✅ Check API authorization error
+        if (apiRequest.has("error")) {
+            return new ResponseEntity<>( apiRequest.toString(), HttpStatus.UNAUTHORIZED );
+        }
+
+
+        //  Success Response
+        JSONObject successResponse = new JSONObject();
+        successResponse.put("status", "success");
+        successResponse.put("message", "Record inserted/updated successfully");
+        successResponse.put("data", object);
+
+        return new ResponseEntity<>( successResponse.toString(), HttpStatus.OK );
+
+	}
+
+	
 	String getAPIResponse(List<PromotionProduct> promotionproducts, PromotionProduct promotionproduct, JSONArray Jsonpromotionproducts, JSONObject Jsonpromotionproduct, String message, JSONObject apiRequest, boolean isWithDetail) throws JSONException, JsonProcessingException, ParseException {
 		ObjectMapper mapper = new ObjectMapper();
 		String rtnAPIResponse="Invalid Resonse";
@@ -140,75 +348,35 @@ public class promotionProductController {
 	
 	
 }
+
 /*
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@RequestMapping(value = "/ids", method = RequestMethod.POST)
-	public ResponseEntity getByIDs(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
-			throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionProduct/ids", data, null, headToken);
-		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
-
-		List<Integer> customer_IDS = new ArrayList<Integer>(); 
-		JSONObject jsonObj = new JSONObject(data);
-		JSONArray jsonCustomers = jsonObj.getJSONArray("promotionProducts");
-		for (int i=0; i<jsonCustomers.length(); i++) {
-			customer_IDS.add((Integer) jsonCustomers.get(i));
-		}
-		List<promotionProduct> promotionProducts = promotionProductRepository.findByIDs(customer_IDS);
-
-		return new ResponseEntity(getAPIResponse(promotionProducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
-	}
 	
+
+
 	
-	
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public ResponseEntity update(@PathVariable Long id, @RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
-			throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("PUT", "/promotionProduct/"+id, data, null, headToken);
-		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
-
-		JSONObject jsonObj = new JSONObject(data);
-		jsonObj.put("customer_ID", id);
-
-		return insertupdateAll(null, jsonObj, apiRequest);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@RequestMapping( method = RequestMethod.PUT)
-	public ResponseEntity updateAll(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
-			throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("PUT", "/promotionProduct", data, null, headToken);
-		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
-
-		return insertupdateAll(new JSONArray(data), null, apiRequest);
-	}
-
 	@SuppressWarnings({ "unchecked", "rawtypes", "null" })
-	public ResponseEntity insertupdateAll(JSONArray jsonCustomers, JSONObject jsonpromotionProduct, JSONObject apiRequest) throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
+	public ResponseEntity insertupdateAll(JSONArray jsonpromotionproduct, JSONObject jsonpromotionProduct, JSONObject apiRequest) throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
 		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 
 		List<PromotionProduct> promotionProducts = new ArrayList<PromotionProduct>();
 		if (jsonpromotionProduct != null) {
-			jsonCustomers = new JSONArray();
-			jsonCustomers.put(jsonpromotionProduct);
+			jsonpromotionproduct = new JSONArray();
+			jsonpromotionproduct.put(jsonpromotionProduct);
 		}
 
 	oducts.add(promotionProduct);
 		}
 		
-		adddded
-		
+	
 		ResponseEntity responseentity;
 		if (jsonpromotionProduct != null)
 			responseentity = new ResponseEntity(getAPIResponse(null, promotionProducts.get(0), null, null, null, apiRequest, true), HttpStatus.OK);
 		else
 			responseentity = new ResponseEntity(getAPIResponse(promotionProducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
-		return responsee	for (int i=0; i<jsonCustomers.length(); i++) {
-			JSONObject jsonObj = jsonCustomers.getJSONObject(i);
+		return responsee	for (int i=0; i<jsonpromotionproduct.length(); i++) {
+			JSONObject jsonObj = jsonpromotionproduct.getJSONObject(i);
 			PromotionProduct promotionProduct = new  PromotionProduct();
 			long id=0; 
 			
@@ -258,56 +426,6 @@ public class promotionProductController {
 			promotionPrntity;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity delete(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
-			throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("DELETE", "/promotionProduct/"+id, null, null, headToken);
-		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
-
-		promotionProduct promotionProduct = promotionProductRepository.findOne(id);
-		promotionProductRepository.delete(promotionProduct);
-
-		return new ResponseEntity(getAPIResponse(null, promotionProduct, null, null, null, apiRequest, true), HttpStatus.OK);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@RequestMapping(value = "/remove/{id}", method = RequestMethod.GET)
-	public ResponseEntity remove(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionProduct/remove/"+id, null, null, headToken);
-		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
-
-		JSONObject promotionProduct = new JSONObject();
-		promotionProduct.put("customer_ID", id);
-		promotionProduct.put("isactive", "N");
-
-		return insertupdateAll(null, promotionProduct, apiRequest);
-	}
-
-	@SuppressWarnings({ "rawtypes" })
-	@RequestMapping(value = "/search", method = RequestMethod.POST)
-	public ResponseEntity getBySearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
-		return BySearch(data, true, headToken, LimitGrant);
-	}
-
-	@SuppressWarnings({ "rawtypes" })
-	@RequestMapping(value = "/search/all", method = RequestMethod.POST)
-	public ResponseEntity getAllBySearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
-		return BySearch(data, false, headToken, LimitGrant);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ResponseEntity BySearch(String data, boolean active, String headToken, String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionProduct/search" + ((active == true) ? "" : "/all"), data, null, headToken);
-		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
-
-		JSONObject jsonObj = new JSONObject(data);
-
-		List<promotionProduct> promotionProducts = ((active == true)
-				? promotionProductRepository.findBySearch("%" + jsonObj.getString("search") + "%")
-						: promotionProductRepository.findAllBySearch("%" + jsonObj.getString("search") + "%"));
-
-		return new ResponseEntity(getAPIResponse(promotionProducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
 	}
 
 	@SuppressWarnings({ "rawtypes" })
@@ -431,7 +549,7 @@ public class promotionProductController {
 		return new ResponseEntity(getAPIResponse(promotionProducts, null, null, null, null, apiRequest, isWithDetail), HttpStatus.OK);
 	}
 
-	String getAPIResponse(List<promotionProduct> promotionProducts, promotionProduct promotionProduct, JSONArray jsonCustomers, JSONObject jsonpromotionProduct, String message, JSONObject apiRequest, boolean isWithDetail) throws JSONException, JsonProcessingException, ParseException, InterruptedException, ExecutionException {
+	String getAPIResponse(List<promotionProduct> promotionProducts, promotionProduct promotionProduct, JSONArray jsonpromotionproduct, JSONObject jsonpromotionProduct, String message, JSONObject apiRequest, boolean isWithDetail) throws JSONException, JsonProcessingException, ParseException, InterruptedException, ExecutionException {
 		ObjectMapper mapper = new ObjectMapper();
 		String rtnAPIResponse="Invalid Resonse";
 
@@ -614,8 +732,8 @@ public class promotionProductController {
 				rtnAPIResponse = mapper.writeValueAsString(promotionProducts);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (jsonCustomers != null) {
-				rtnAPIResponse = jsonCustomers.toString();
+			} else if (jsonpromotionproduct != null) {
+				rtnAPIResponse = jsonpromotionproduct.toString();
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (jsonpromotionProduct != null) {
