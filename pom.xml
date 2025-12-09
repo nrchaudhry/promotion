@@ -30,6 +30,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -146,7 +147,12 @@
 			<groupId>com.cwiztech</groupId>
 			<artifactId>agency</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>--> 
+		</dependency>-->
+		<dependency>
+			<groupId>com.cwiztech</groupId>
+			<artifactId>agency</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	
 
