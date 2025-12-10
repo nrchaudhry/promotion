@@ -29,8 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cwiztech.promotion.model.Promotion;
 import com.cwiztech.promotion.model.PromotionProduct;
-import com.cwiztech.log.apiRequestLog;
 import com.cwiztech.promotion.repository.promotionProductRepository;
+import com.cwiztech.log.apiRequestLog;
 import com.cwiztech.services.ServiceCall;
 import com.cwiztech.token.AccessToken;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -114,7 +114,16 @@ public class promotionProductController<promotionproduct> {
 		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
 	
-	
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity insert(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
+			throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
+		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionProduct", data, null, headToken);
+		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
+
+		return insertupdateAll(null, new JSONObject(data), apiRequest);
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping( method = RequestMethod.PUT)
@@ -141,21 +150,6 @@ public class promotionProductController<promotionproduct> {
 		return insertupdateAll(null, jsonObj, apiRequest);
 	}
 	
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@RequestMapping(value = "/remove/{id}", method = RequestMethod.GET)
-	public ResponseEntity remove(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionProduct/remove/"+id, null, null, headToken);
-		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
-
-		JSONObject promotionProduct = new JSONObject();
-		promotionProduct.put("PROMOTIONPRODUCT_ID", id);
-		promotionProduct.put("isactive", "N");
-
-		
-		return insertupdateAll(null, promotionProduct, apiRequest);
-	}
-
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ResponseEntity insertupdateAll(JSONArray jsonpromotionproducts, JSONObject jsonpromotionproduct, JSONObject apiRequest) throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
@@ -233,7 +227,8 @@ public class promotionProductController<promotionproduct> {
 	}
 
 
-	
+	// we delete the id that we enter  in api 
+	// first we find & then we delete
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity delete(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
@@ -246,17 +241,37 @@ public class promotionProductController<promotionproduct> {
 		return new ResponseEntity(getAPIResponse(null, promotionproduct, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
 
+	//update the list  to remove the given id and make it non-active
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping(value = "/remove/{id}", method = RequestMethod.GET)
+	public ResponseEntity remove(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
+		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionProduct/remove/"+id, null, null, headToken);
+		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
+
+		JSONObject promotionProduct = new JSONObject();
+		promotionProduct.put("PROMOTIONPRODUCT_ID", id);
+		promotionProduct.put("isactive", "N");
+
+		
+		return insertupdateAll(null, promotionProduct, apiRequest);
+	}
 	
 	
+	// Calls a common method BySearch()
+    // true means → fetch only active records
 	@SuppressWarnings({ "rawtypes" })
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
 	public ResponseEntity getBySearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+		
 		return BySearch(data, true, headToken, LimitGrant);
 	}
 
+	// Calls same logic as /search
+    // false means: (active + inactive records )
 	@SuppressWarnings({ "rawtypes" })
 	@RequestMapping(value = "/search/all", method = RequestMethod.POST)
 	public ResponseEntity getAllBySearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+		
 		return BySearch(data, false, headToken, LimitGrant);
 	}
 
@@ -267,7 +282,12 @@ public class promotionProductController<promotionproduct> {
 
 		JSONObject jsonObj = new JSONObject(data);
 
+		
+		 // If active == true  ,  Calls findBySearch() → active records only
+       // Else  ,   Calls findAllBySearch() → all records
+		
 		List<PromotionProduct> promotionproducts = ((active == true)
+				
 				? promotionproductrepository.findBySearch("%" + jsonObj.getString("search") + "%")
 				: promotionproductrepository.findAllBySearch("%" + jsonObj.getString("search") + "%"));
 		
@@ -340,6 +360,7 @@ public class promotionProductController<promotionproduct> {
 	// If an ID exists → Update record
 	// If ID does not exist → Insert new record
 	
+	@SuppressWarnings({ "unused", "rawtypes" })
 	private ResponseEntity insertupdateAll(Object object, JSONObject jsonObject, JSONObject apiRequest) {
 		
 		// TODO Auto-generated method stub
