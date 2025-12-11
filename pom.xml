@@ -143,16 +143,6 @@
 			<version>2.7.0</version>
 		</dependency>
 		
-		<!-- <dependency>
-			<groupId>com.cwiztech</groupId>
-			<artifactId>agency</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>-->
-		<dependency>
-			<groupId>com.cwiztech</groupId>
-			<artifactId>agency</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 	
 

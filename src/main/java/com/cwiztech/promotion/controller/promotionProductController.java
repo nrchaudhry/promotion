@@ -6,13 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +18,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cwiztech.promotion.model.Promotion;
 import com.cwiztech.promotion.model.PromotionProduct;
 import com.cwiztech.promotion.repository.promotionProductRepository;
 import com.cwiztech.log.apiRequestLog;
@@ -43,12 +39,9 @@ import com.google.maps.errors.ApiException;
 public class promotionProductController<promotionproduct> {
 	private static final Logger log = LoggerFactory.getLogger(promotionProductController.class);
 
-    private static final JSONTokener data = null;
-
 	@Autowired
 	private promotionProductRepository promotionproductrepository;
 	
-	//is ma jo active ho gy wohi call kry gy
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity get(@RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
@@ -58,11 +51,8 @@ public class promotionProductController<promotionproduct> {
 		List<PromotionProduct> promotionproducts = promotionproductrepository.findActive();
 
 		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
-
 	}
 
-	
-    //is ma pori list call kry gy	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/all", method = RequestMethod.GET)
 	public ResponseEntity getAll(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
@@ -74,9 +64,6 @@ public class promotionProductController<promotionproduct> {
 		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
 	
-	
-	// it display only that we call
-	//aur return ma humne first ma null isi liy diya kyu ky hume list of product ni chiy 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity getOne(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
@@ -313,7 +300,7 @@ public class promotionProductController<promotionproduct> {
 		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionproduct/advancedsearch" + ((active == true) ? "" : "/all"), data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 		
-		List<PromotionProduct> promotions = new ArrayList<PromotionProduct>();
+		List<PromotionProduct> promotionproducts = new ArrayList<PromotionProduct>();
 		JSONObject jsonObj = new JSONObject(data);
         JSONArray searchObject = new JSONArray();
 
@@ -322,36 +309,54 @@ public class promotionProductController<promotionproduct> {
             isWithDetail = jsonObj.getBoolean("iswithdetail");
         }
         jsonObj.put("iswithdetail", false);
-        List<Integer> promotionproduct_IDS = new ArrayList<Integer>(); 
         
-        promotionproduct_IDS.add((int) 0);
-		long promotionproduct_ID=0;
-
-        if (jsonObj.has("promotionproduct_ID") && !jsonObj.isNull("promotionproduct_ID") && jsonObj.getLong("promotionproduct_ID") != 0) {
-        	promotionproduct_ID = jsonObj.getLong("promotionproduct_ID");
-        	promotionproduct_IDS.add((int) promotionproduct_ID);
+		long promotion_ID=0, product_ID=0;
+        List<Integer> promotion_IDS = new ArrayList<Integer>(); 
+        List<Integer> product_IDS = new ArrayList<Integer>(); 
+        
+        promotion_IDS.add((int) 0);
+        product_IDS.add((int) 0);
+        
+        if (jsonObj.has("promotion_ID") && !jsonObj.isNull("promotion_ID") && jsonObj.getLong("promotion_ID") != 0) {
+        	promotion_ID = jsonObj.getLong("promotion_ID");
+        	promotion_IDS.add((int) promotion_ID);
         	
-        } 
-        else if (jsonObj.has("promotionproduct") && !jsonObj.isNull("promotionproduct") && jsonObj.getLong("promotionproduct") != 0) {
-        	
+        }  else if (jsonObj.has("promotion") && !jsonObj.isNull("promotion") && jsonObj.getLong("promotion") != 0) {
             if (active == true) {
-                searchObject = new JSONArray(ServiceCall.POST("promotionproduct/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
+                searchObject = new JSONArray(ServiceCall.POST("promotion/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
             } else {
-                searchObject = new JSONArray(ServiceCall.POST("promotionproduct/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
+                searchObject = new JSONArray(ServiceCall.POST("promotion/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
             }
 
-            promotionproduct_ID = searchObject.length();
+            promotion_ID = searchObject.length();
             for (int i=0; i<searchObject.length(); i++) {
-            	promotionproduct_IDS.add((int) searchObject.getJSONObject(i).getLong("promotionproduct_ID"));
+            	promotion_IDS.add((int) searchObject.getJSONObject(i).getLong("promotion_ID"));
             }
         }
 		
-		if (promotionproduct_ID != 0) {
-		 promotions = ((active == true)
-				? promotionproductrepository.findByAdvancedSearch(promotionproduct_ID, promotionproduct_IDS)
-				: promotionproductrepository.findAllByAdvancedSearch(promotionproduct_ID, promotionproduct_IDS));
+        if (jsonObj.has("product_ID") && !jsonObj.isNull("product_ID") && jsonObj.getLong("product_ID") != 0) {
+        	product_ID = jsonObj.getLong("product_ID");
+        	product_IDS.add((int) product_ID);
+        	
+        }  else if (jsonObj.has("product") && !jsonObj.isNull("product") && jsonObj.getLong("product") != 0) {
+            if (active == true) {
+                searchObject = new JSONArray(ServiceCall.POST("product/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
+            } else {
+                searchObject = new JSONArray(ServiceCall.POST("product/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
+            }
+
+            product_ID = searchObject.length();
+            for (int i=0; i<searchObject.length(); i++) {
+            	product_IDS.add((int) searchObject.getJSONObject(i).getLong("product_ID"));
+            }
+        }
+		
+		if (promotion_ID != 0 || product_ID != 0) {
+		 promotionproducts = ((active == true)
+				? promotionproductrepository.findByAdvancedSearch(promotion_ID, promotion_IDS, product_ID, product_IDS)
+				: promotionproductrepository.findAllByAdvancedSearch(promotion_ID, promotion_IDS, product_ID, product_IDS));
 		}
-		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, isWithDetail).toString(), HttpStatus.OK);
+		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, isWithDetail).toString(), HttpStatus.OK);
 	}
 	
 	
