@@ -17,39 +17,38 @@ public interface promotionRepository extends JpaRepository<Promotion, Long> {
 	
 	
 	@Query(value = "select * from tblpromotion "
-			+ "where Promotion_ID in (:ids) "
+			+ "where PROMOTION_ID in (:ids) "
 			+ "", nativeQuery = true)
 	public List<Promotion> findByIDs(@Param("ids") List<Integer> ids);
 	
 	
 	@Query(value = "select * from tblpromotion "
-			+ "where (Promotion_ID like ?1 or INVOICE_NUMBER like ?1) "
+			+ "where (PROMOTION_ID like ?1 ) "
 			+ "and ISACTIVE='Y'", nativeQuery = true)
 	public List<Promotion> findBySearch(String search);
 	
-	 @Query(value = "select * from tblpromotion where PROMOTION_ID=?1", nativeQuery = true)
-	    public List<Promotion> findByCode(String search);
+	
 
 	 @Query(value = "select * from tblpromotion "
 				+ "where PROMOTION_ID like ?1 or  PROMOTION_TITLE like ?1 or  PROMOTION_DESCRIPTION like ?1 ", nativeQuery = true)
 		public List<Promotion> findAllBySearch(String search);
 	 
 	 
-	 @Query(value = "select * from tblpromotion " 
-				+ "where (CASE WHEN :PROMOTION_ID = 0 THEN PROMOTION_ID=PROMOTION_ID ELSE PROMOTION_ID IN (:PROMOTION_IDS) END or PROMOTION_ID is NULL) "
+	 @Query(value = "select * from tblpromotionproduct " 
+				+ "where (CASE WHEN :PROMOTIONTYPE_ID = 0 THEN PROMOTIONTYPE_ID=PROMOTIONTYPE_ID ELSE PROMOTIONTYPE_ID IN (:PROMOTIONTYPE_IDS) END or PROMOTIONTYPE_ID is NULL) "
 				+ "and ISACTIVE='Y'", nativeQuery = true)
 		List<Promotion> findByAdvancedSearch(
-	    @Param("PROMOTION_ID") Long PROMOTION_ID, @Param("PROMOTION_IDS") List<Integer> PROMOTION_IDS);
+			    @Param("PROMOTIONTYPE_ID") Long PROMOTIONTYPE_ID, @Param("PROMOTIONTYPE_IDS") List<Integer> PROMOTIONTYPE_IDS);
+			   
 
-	 
-	 
-		@Query(value = "select * from tblpromotion " 
-		+ "where (CASE WHEN :PROMOTION_ID = 0 THEN PROMOTION_ID=PROMOTION_ID ELSE PROMOTION_ID IN (:PROMOTION_IDS) END or PROMOTION_ID is NULL) "
-		+ "", nativeQuery = true)
-
+		@Query(value = "select * from tblpromotionproduct " 
+				+ "where (CASE WHEN :PROMOTIONTYPE_ID = 0 THEN PROMOTIONTYPE_ID=PROMOTIONTYPE_ID ELSE PROMOTIONTYPE_ID IN (:PROMOTIONTYPE_IDS) END or PROMOTIONTYPE_ID is NULL) "
+				+ "", nativeQuery = true)
 		List<Promotion> findAllByAdvancedSearch(   
-		@Param("PROMOTION_ID") Long PROMOTION_ID, @Param("PROMOTION_IDS") List<Integer> PROMOTION_IDS);
-	
+			    @Param("PROMOTIONTYPE_ID") Long PROMOTIONTYPE_ID, @Param("PROMOTIONTYPE_IDS") List<Integer> PROMOTIONTYPE_IDS);
+			  
+		 @Query(value = "select * from tblpromotion where PROMOTION_ID=?1", nativeQuery = true)
+		    public List<Promotion> findByCode(String search);
 	
 	
 	

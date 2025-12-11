@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cwiztech.log.apiRequestLog;
 import com.cwiztech.promotion.model.Promotion;
+import com.cwiztech.promotion.model.PromotionProduct;
 import com.cwiztech.promotion.repository.promotionRepository;
 import com.cwiztech.services.ServiceCall;
 import com.cwiztech.token.AccessToken;
@@ -132,33 +133,23 @@ public class promotionController {
 			jsonPromotions = new JSONArray();
 			jsonPromotions.put(jsonPromotion);
 		}
-		log.info(jsonPromotions.toString());
 		
-		for (int a=0; a<jsonPromotions.length(); a++) {
-			JSONObject jsonObj = jsonPromotions.getJSONObject(a);
-			Promotion promotion = new Promotion();
-			long promotionid = 0;
-
-			if (jsonObj.has("promotion_ID")) {
-				promotionid = jsonObj.getLong("promotion_ID");
-				if (promotionid != 0) {
-					promotion = promotionrepository.findOne(promotionid);
-					
-					if (promotion == null)
-						return new ResponseEntity(getAPIResponse(null, null, null, null, "Invalid promotion Data!", apiRequest, true).toString(), HttpStatus.OK);
+		for (int i=0; i<jsonPromotion.length(); i++) {
+			JSONObject jsonObj = jsonPromotions.getJSONObject(i);
+			Promotion promotion = new  Promotion();
+			long id=0; 
+			
+			if (jsonObj.has("PROMOTIONPRODCUT_ID")) {
+				id = jsonObj.getLong("PROMOTIONPRODCUT_ID");
+				if (id!=0) {
+					promotion = promotionrepository.findOne(id);
 				}
 			}
 			
-			if (promotionid == 0) {
-				if (!jsonObj.has("promotion_ID") || jsonObj.isNull("promotion_ID"))
-					return new ResponseEntity(getAPIResponse(null, null, null, null, "promotion_ID is missing", apiRequest, true).toString(), HttpStatus.OK);
-				
-				if (!jsonObj.has("promotion_TITLE") || jsonObj.isNull("promotion_TITLE"))
-					return new ResponseEntity(getAPIResponse(null, null, null, null, "promotion_TITLE is missing", apiRequest, true).toString(), HttpStatus.OK);
-				
-				List<Promotion> search = promotionrepository.findByCode(jsonObj.getString("promotion_ID"));
-				if (search.size()>0)
-					return new ResponseEntity(getAPIResponse(null, null, null, null, "promotion_ID already exist!", apiRequest, true).toString(), HttpStatus.OK);
+			if (id == 0) {
+				if (!jsonObj.has("PROMOTION_ID") ) {
+					return new ResponseEntity(getAPIResponse(null, null , null, null, "PROMOTION_ID are missing", apiRequest, true), HttpStatus.OK);
+				}
 			}
 			if (jsonObj.has("promotion_ID") && !jsonObj.isNull("promotion_ID"))
 				promotion.setPROMOTION_ID(jsonObj.getLong("promotion_ID"));
@@ -195,7 +186,7 @@ public class promotionController {
 
 			
 			
-			if (promotionid == 0)
+			if (id == 0)
 				promotion.setISACTIVE("Y");
 			else if (jsonObj.has("isactive") && !jsonObj.isNull("isactive"))
 				promotion.setISACTIVE(jsonObj.getString("isactive"));
@@ -207,12 +198,7 @@ public class promotionController {
 			promotions.add(promotion);
 		}
 		
-		for (int a=0; a<promotions.size(); a++) {
-			Promotion promotion = promotions.get(a);
-			promotion = promotionrepository.saveAndFlush(promotion);
-			promotions.get(a).setPROMOTION_ID(promotion.getPROMOTION_ID());
-		}
-		
+	
 		ResponseEntity responseentity;
 		if (jsonPromotion != null)
 			responseentity = new ResponseEntity(getAPIResponse(null, promotions.get(0), null, null, null, apiRequest, true).toString(), HttpStatus.OK);
@@ -221,16 +207,7 @@ public class promotionController {
 		return responseentity;
 	}
 	
-	
-	
-	
-	private ResponseEntity error(String string, JSONObject apiRequest) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity delete(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
@@ -257,7 +234,6 @@ public class promotionController {
 	}
 	
 
-	
 	@SuppressWarnings({ "rawtypes" })
 	@RequestMapping(value = "/search/all", method = RequestMethod.POST)
 	public ResponseEntity getAllBySearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
@@ -304,34 +280,37 @@ public class promotionController {
             isWithDetail = jsonObj.getBoolean("iswithdetail");
         }
         jsonObj.put("iswithdetail", false);
-        List<Integer> promotion_IDS = new ArrayList<Integer>(); 
         
-        promotion_IDS.add((int) 0);
-		long promotion_ID=0;
-
-        if (jsonObj.has("promotion_ID") && !jsonObj.isNull("promotion_ID") && jsonObj.getLong("promotion_ID") != 0) {
-        	promotion_ID = jsonObj.getLong("promotion_ID");
-        	promotion_IDS.add((int) promotion_ID);
-        } else if (jsonObj.has("promotion") && !jsonObj.isNull("promotion") && jsonObj.getLong("promotion") != 0) {
+        long promotiontype_ID=0;
+        List<Integer> promotiontype_IDS = new ArrayList<Integer>(); 
+      
+        promotiontype_IDS.add((int) 0);
+        
+        if (jsonObj.has("promotiontype_ID") && !jsonObj.isNull("promotiontype_ID") && jsonObj.getLong("promotiontype_ID") != 0) {
+        	promotiontype_ID = jsonObj.getLong("promotiontype_ID");
+        	promotiontype_IDS.add((int) promotiontype_ID);
+        }
+        else if (jsonObj.has("promotionType") && !jsonObj.isNull("promotionType") && jsonObj.getLong("promotionType") != 0) {
             if (active == true) {
-                searchObject = new JSONArray(ServiceCall.POST("promotion/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
+                searchObject = new JSONArray(ServiceCall.POST("promotionType/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
             } else {
-                searchObject = new JSONArray(ServiceCall.POST("promotion/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
+                searchObject = new JSONArray(ServiceCall.POST("promotiontype/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
             }
 
-            promotion_ID = searchObject.length();
+            promotiontype_ID = searchObject.length();
             for (int i=0; i<searchObject.length(); i++) {
-            	promotion_IDS.add((int) searchObject.getJSONObject(i).getLong("promotion_ID"));
+            	promotiontype_IDS.add((int) searchObject.getJSONObject(i).getLong("promotion_ID"));
             }
         }
-		
-		if (promotion_ID != 0) {
+	
+		if (promotiontype_ID != 0) {
 		 promotions = ((active == true)
-				? promotionrepository.findByAdvancedSearch(promotion_ID, promotion_IDS)
-				: promotionrepository.findAllByAdvancedSearch(promotion_ID, promotion_IDS));
+				? promotionrepository.findByAdvancedSearch(promotiontype_ID, promotiontype_IDS)
+				: promotionrepository.findAllByAdvancedSearch(promotiontype_ID, promotiontype_IDS));
 		}
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, isWithDetail).toString(), HttpStatus.OK);
 	}
+	
 
 	// getAPIrequest function
 	String getAPIResponse(List<Promotion> promotions, Promotion promotion, JSONArray Jsonpromotions,
