@@ -359,18 +359,9 @@ public class promotionProductController<promotionproduct> {
 		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, isWithDetail).toString(), HttpStatus.OK);
 	}
 	
-	
-	 
-	// this is jsonobj method for insert and update
-	// If an ID exists → Update record
-	// If ID does not exist → Insert new record
-	
 	@SuppressWarnings({ "unused", "rawtypes" })
 	private ResponseEntity insertupdateAll(Object object, JSONObject jsonObject, JSONObject apiRequest) {
 		
-		// TODO Auto-generated method stub
-		
-	       // ✅ Check API authorization error
         if (apiRequest.has("error")) {
             return new ResponseEntity<>( apiRequest.toString(), HttpStatus.UNAUTHORIZED );
         }
