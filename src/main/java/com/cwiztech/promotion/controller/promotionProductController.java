@@ -41,7 +41,7 @@ public class promotionProductController<promotionproduct> {
 
 	@Autowired
 	private promotionProductRepository promotionproductrepository;
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity get(@RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
@@ -60,10 +60,10 @@ public class promotionProductController<promotionproduct> {
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
 		List<PromotionProduct> promotionproducts = promotionproductrepository.findAll();
-		
+
 		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity getOne(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
@@ -81,7 +81,7 @@ public class promotionProductController<promotionproduct> {
 	@RequestMapping(value = "/ids", method = RequestMethod.POST)
 	public ResponseEntity getByIDs(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
 			throws JsonProcessingException, JSONException, ParseException {
-		
+
 		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionproduct/ids", data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.BAD_REQUEST);
 
@@ -91,16 +91,16 @@ public class promotionProductController<promotionproduct> {
 		for (int i=0; i<jsonpromotionproducts.length(); i++) {
 			promotionproduct_IDS.add((Integer) jsonpromotionproducts.get(i));
 		}
-		
+
 		List<PromotionProduct> promotionproducts = new ArrayList<PromotionProduct>();
 		if (jsonpromotionproducts.length()>0)
-			
+
 			promotionproducts = promotionproductrepository.findByIDs(promotionproduct_IDS);
-		
-		
+
+
 		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
-	
+
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.POST)
@@ -121,13 +121,13 @@ public class promotionProductController<promotionproduct> {
 
 		return insertupdateAll(new JSONArray(data), null, apiRequest);
 	}
-	
-	
+
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity update(@PathVariable Long id, @RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
 			throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
-		
+
 		JSONObject apiRequest = AccessToken.checkToken("PUT", "/promotionProduct/"+id, data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
@@ -136,7 +136,7 @@ public class promotionProductController<promotionproduct> {
 
 		return insertupdateAll(null, jsonObj, apiRequest);
 	}
-	
+
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ResponseEntity insertupdateAll(JSONArray jsonpromotionproducts, JSONObject jsonpromotionproduct, JSONObject apiRequest) throws JSONException, ParseException, ApiException, InterruptedException, IOException, ExecutionException {
@@ -153,7 +153,7 @@ public class promotionProductController<promotionproduct> {
 			JSONObject jsonObj = jsonpromotionproducts.getJSONObject(i);
 			PromotionProduct promotionproduct = new  PromotionProduct();
 			long id=0; 
-			
+
 			if (jsonObj.has("PROMOTIONPRODCUT_ID")) {
 				id = jsonObj.getLong("PROMOTIONPRODCUT_ID");
 				if (id!=0) {
@@ -184,12 +184,12 @@ public class promotionProductController<promotionproduct> {
 
 			if (jsonObj.has("MAXPURCHASE_LIMIT") && !jsonObj.isNull("MAXPURCHASE_LIMIT"))
 				promotionproduct.setMAXPURCHASE_LIMIT(jsonObj.getLong("MAXPURCHASE_LIMIT"));
-			
+
 
 			if (jsonObj.has("PROMOTIONPRODCUT_NOTES") && !jsonObj.isNull("PROMOTIONPRODCUT_NOTES"))
 				promotionproduct.setPROMOTIONPRODCUT_NOTES(jsonObj.getString("PROMOTIONPRODCUT_NOTES"));
-			
-			
+
+
 
 			if (id == 0)
 				promotionproduct.setISACTIVE("Y");
@@ -202,7 +202,7 @@ public class promotionProductController<promotionproduct> {
 
 			promotionproduct = promotionproductrepository.saveAndFlush(promotionproduct);
 			promotionproducts.add(promotionproduct);
-			
+
 		}
 
 		ResponseEntity responseentity;
@@ -224,7 +224,7 @@ public class promotionProductController<promotionproduct> {
 
 		PromotionProduct promotionproduct = promotionproductrepository.findOne(id);
 		promotionproductrepository.delete(promotionproduct);
-		
+
 		return new ResponseEntity(getAPIResponse(null, promotionproduct, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
 
@@ -239,26 +239,26 @@ public class promotionProductController<promotionproduct> {
 		promotionProduct.put("PROMOTIONPRODUCT_ID", id);
 		promotionProduct.put("isactive", "N");
 
-		
+
 		return insertupdateAll(null, promotionProduct, apiRequest);
 	}
-	
-	
+
+
 	// Calls a common method BySearch()
-    // true means → fetch only active records
+	// true means → fetch only active records
 	@SuppressWarnings({ "rawtypes" })
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
 	public ResponseEntity getBySearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
-		
+
 		return BySearch(data, true, headToken, LimitGrant);
 	}
 
 	// Calls same logic as /search
-    // false means: (active + inactive records )
+	// false means: (active + inactive records )
 	@SuppressWarnings({ "rawtypes" })
 	@RequestMapping(value = "/search/all", method = RequestMethod.POST)
 	public ResponseEntity getAllBySearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
-		
+
 		return BySearch(data, false, headToken, LimitGrant);
 	}
 
@@ -269,19 +269,19 @@ public class promotionProductController<promotionproduct> {
 
 		JSONObject jsonObj = new JSONObject(data);
 
-		
-		 // If active == true  ,  Calls findBySearch() → active records only
-       // Else  ,   Calls findAllBySearch() → all records
-		
+
+		// If active == true  ,  Calls findBySearch() → active records only
+		// Else  ,   Calls findAllBySearch() → all records
+
 		List<PromotionProduct> promotionproducts = ((active == true)
-				
+
 				? promotionproductrepository.findBySearch("%" + jsonObj.getString("search") + "%")
-				: promotionproductrepository.findAllBySearch("%" + jsonObj.getString("search") + "%"));
-		
+						: promotionproductrepository.findAllBySearch("%" + jsonObj.getString("search") + "%"));
+
 		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
 
-	
+
 
 	@SuppressWarnings({ "rawtypes" })
 	@RequestMapping(value = "/advancedsearch", method = RequestMethod.POST)
@@ -299,81 +299,81 @@ public class promotionProductController<promotionproduct> {
 	public ResponseEntity ByAdvancedSearch(String data, boolean active, String headToken, String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
 		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionproduct/advancedsearch" + ((active == true) ? "" : "/all"), data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
-		
+
 		List<PromotionProduct> promotionproducts = new ArrayList<PromotionProduct>();
 		JSONObject jsonObj = new JSONObject(data);
-        JSONArray searchObject = new JSONArray();
+		JSONArray searchObject = new JSONArray();
 
-        boolean isWithDetail = true;
-        if (jsonObj.has("iswithdetail") && !jsonObj.isNull("iswithdetail")) {
-            isWithDetail = jsonObj.getBoolean("iswithdetail");
-        }
-        jsonObj.put("iswithdetail", false);
-        
+		boolean isWithDetail = true;
+		if (jsonObj.has("iswithdetail") && !jsonObj.isNull("iswithdetail")) {
+			isWithDetail = jsonObj.getBoolean("iswithdetail");
+		}
+		jsonObj.put("iswithdetail", false);
+
 		long promotion_ID=0, product_ID=0;
-        List<Integer> promotion_IDS = new ArrayList<Integer>(); 
-        List<Integer> product_IDS = new ArrayList<Integer>(); 
-        
-        promotion_IDS.add((int) 0);
-        product_IDS.add((int) 0);
-        
-        if (jsonObj.has("promotion_ID") && !jsonObj.isNull("promotion_ID") && jsonObj.getLong("promotion_ID") != 0) {
-        	promotion_ID = jsonObj.getLong("promotion_ID");
-        	promotion_IDS.add((int) promotion_ID);
-        	
-        }  else if (jsonObj.has("promotion") && !jsonObj.isNull("promotion") && jsonObj.getLong("promotion") != 0) {
-            if (active == true) {
-                searchObject = new JSONArray(ServiceCall.POST("promotion/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
-            } else {
-                searchObject = new JSONArray(ServiceCall.POST("promotion/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
-            }
+		List<Integer> promotion_IDS = new ArrayList<Integer>(); 
+		List<Integer> product_IDS = new ArrayList<Integer>(); 
 
-            promotion_ID = searchObject.length();
-            for (int i=0; i<searchObject.length(); i++) {
-            	promotion_IDS.add((int) searchObject.getJSONObject(i).getLong("promotion_ID"));
-            }
-        }
-		
-        if (jsonObj.has("product_ID") && !jsonObj.isNull("product_ID") && jsonObj.getLong("product_ID") != 0) {
-        	product_ID = jsonObj.getLong("product_ID");
-        	product_IDS.add((int) product_ID);
-        	
-        }  else if (jsonObj.has("product") && !jsonObj.isNull("product") && jsonObj.getLong("product") != 0) {
-            if (active == true) {
-                searchObject = new JSONArray(ServiceCall.POST("product/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
-            } else {
-                searchObject = new JSONArray(ServiceCall.POST("product/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
-            }
+		promotion_IDS.add((int) 0);
+		product_IDS.add((int) 0);
 
-            product_ID = searchObject.length();
-            for (int i=0; i<searchObject.length(); i++) {
-            	product_IDS.add((int) searchObject.getJSONObject(i).getLong("product_ID"));
-            }
-        }
-		
+		if (jsonObj.has("promotion_ID") && !jsonObj.isNull("promotion_ID") && jsonObj.getLong("promotion_ID") != 0) {
+			promotion_ID = jsonObj.getLong("promotion_ID");
+			promotion_IDS.add((int) promotion_ID);
+
+		}  else if (jsonObj.has("promotion") && !jsonObj.isNull("promotion") && jsonObj.getLong("promotion") != 0) {
+			if (active == true) {
+				searchObject = new JSONArray(ServiceCall.POST("promotion/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
+			} else {
+				searchObject = new JSONArray(ServiceCall.POST("promotion/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
+			}
+
+			promotion_ID = searchObject.length();
+			for (int i=0; i<searchObject.length(); i++) {
+				promotion_IDS.add((int) searchObject.getJSONObject(i).getLong("promotion_ID"));
+			}
+		}
+
+		if (jsonObj.has("product_ID") && !jsonObj.isNull("product_ID") && jsonObj.getLong("product_ID") != 0) {
+			product_ID = jsonObj.getLong("product_ID");
+			product_IDS.add((int) product_ID);
+
+		}  else if (jsonObj.has("product") && !jsonObj.isNull("product") && jsonObj.getLong("product") != 0) {
+			if (active == true) {
+				searchObject = new JSONArray(ServiceCall.POST("product/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
+			} else {
+				searchObject = new JSONArray(ServiceCall.POST("product/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
+			}
+
+			product_ID = searchObject.length();
+			for (int i=0; i<searchObject.length(); i++) {
+				product_IDS.add((int) searchObject.getJSONObject(i).getLong("product_ID"));
+			}
+		}
+
 		if (promotion_ID != 0 || product_ID != 0) {
-		 promotionproducts = ((active == true)
-				? promotionproductrepository.findByAdvancedSearch(promotion_ID, promotion_IDS, product_ID, product_IDS)
-				: promotionproductrepository.findAllByAdvancedSearch(promotion_ID, promotion_IDS, product_ID, product_IDS));
+			promotionproducts = ((active == true)
+					? promotionproductrepository.findByAdvancedSearch(promotion_ID, promotion_IDS, product_ID, product_IDS)
+							: promotionproductrepository.findAllByAdvancedSearch(promotion_ID, promotion_IDS, product_ID, product_IDS));
 		}
 		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, isWithDetail).toString(), HttpStatus.OK);
 	}
-	
+
 	@SuppressWarnings({ "unused", "rawtypes" })
 	private ResponseEntity insertupdateAll(Object object, JSONObject jsonObject, JSONObject apiRequest) {
-		
-        if (apiRequest.has("error")) {
-            return new ResponseEntity<>( apiRequest.toString(), HttpStatus.UNAUTHORIZED );
-        }
+
+		if (apiRequest.has("error")) {
+			return new ResponseEntity<>( apiRequest.toString(), HttpStatus.UNAUTHORIZED );
+		}
 
 
-        //  Success Response
-        JSONObject successResponse = new JSONObject();
-        successResponse.put("status", "success");
-        successResponse.put("message", "Record inserted/updated successfully");
-        successResponse.put("data", object);
+		//  Success Response
+		JSONObject successResponse = new JSONObject();
+		successResponse.put("status", "success");
+		successResponse.put("message", "Record inserted/updated successfully");
+		successResponse.put("data", object);
 
-        return new ResponseEntity<>( successResponse.toString(), HttpStatus.OK );
+		return new ResponseEntity<>( successResponse.toString(), HttpStatus.OK );
 
 	}
 
@@ -381,30 +381,30 @@ public class promotionProductController<promotionproduct> {
 	String getAPIResponse(List<PromotionProduct> promotionproducts, PromotionProduct promotionproduct, JSONArray Jsonpromotionproducts, JSONObject Jsonpromotionproduct, String message, JSONObject apiRequest, boolean isWithDetail) throws JSONException, JsonProcessingException, ParseException {
 		ObjectMapper mapper = new ObjectMapper();
 		String rtnAPIResponse="Invalid Resonse";
-		
+
 		if (message != null) {
 			rtnAPIResponse = apiRequestLog.apiRequestErrorLog(apiRequest, "promotionproduct", message).toString();
 		} else {
 			if (promotionproduct != null && isWithDetail == true) {
-				
+
 				rtnAPIResponse = mapper.writeValueAsString(promotionproduct);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
-				
+
 			} else if (promotionproducts != null && isWithDetail == true) {
 				if (promotionproducts.size()>0) {
 				}
-				
-				rtnAPIResponse = mapper.writeValueAsString(promotionproducts);
-				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
-            
-	         } else if (promotionproduct != null && isWithDetail == false) {
-					rtnAPIResponse = mapper.writeValueAsString(promotionproduct);
-					apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-	        } else if (promotionproducts != null && isWithDetail == false) {
 				rtnAPIResponse = mapper.writeValueAsString(promotionproducts);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
-	                
+
+			} else if (promotionproduct != null && isWithDetail == false) {
+				rtnAPIResponse = mapper.writeValueAsString(promotionproduct);
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+
+			} else if (promotionproducts != null && isWithDetail == false) {
+				rtnAPIResponse = mapper.writeValueAsString(promotionproducts);
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+
 			} else if (Jsonpromotionproducts != null) {
 				rtnAPIResponse = Jsonpromotionproducts.toString();
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
@@ -415,13 +415,13 @@ public class promotionProductController<promotionproduct> {
 
 			}
 		}
-		
-		return rtnAPIResponse;
-	
 
-	
+		return rtnAPIResponse;
+
+
+
 	}
-	
-	
+
+
 }
 
