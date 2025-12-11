@@ -17,7 +17,7 @@ public class PromotionProduct {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long PROMOTIONPRODCUT_ID;
+	private long PROMOTIONPRODUCT_ID;
 	
 	@Column(name ="PROMOTION_ID")
 	private Long PROMOTION_ID;
@@ -33,20 +33,20 @@ public class PromotionProduct {
 	private String PRODUCT_DETAIL;
 
 
-	@Column(name ="PROMOTIONPRODCUT_PRICE")
-	private String PROMOTIONPRODCUT_PRICE;
+	@Column(name ="PROMOTIONPRODUCT_PRICE")
+	private Double PROMOTIONPRODUCT_PRICE;
 
 	@Column(name ="QUANTITY_REQUIRED")
-	private String QUANTITY_REQUIRED;
+	private Double QUANTITY_REQUIRED;
 
 	@Column(name ="QUANTITY_BONUS")
-	private String QUANTITY_BONUS;
+	private Double QUANTITY_BONUS;
 
 	@Column(name ="MAXPURCHASE_LIMIT")
 	private Long MAXPURCHASE_LIMIT;
 
-	@Column(name ="PROMOTIONPRODCUT_NOTES")
-	private String PROMOTIONPRODCUT_NOTES;
+	@Column(name ="PROMOTIONPRODUCT_NOTES")
+	private String PROMOTIONPRODUCT_NOTES;
 
 	@Column(name ="ISACTIVE")
 	private String ISACTIVE;
@@ -64,14 +64,13 @@ public class PromotionProduct {
 	private String MODIFIED_WORKSTATION;
 
 
-
-	public long getPROMOTIONPRODCUT_ID() {
-		return PROMOTIONPRODCUT_ID;
+	public long getPROMOTIONPRODUCT_ID() {
+		return PROMOTIONPRODUCT_ID;
 	}
 
 
-	public void setPROMOTIONPRODCUT_ID(long pROMOTIONPRODCUT_ID) {
-		PROMOTIONPRODCUT_ID = pROMOTIONPRODCUT_ID;
+	public void setPROMOTIONPRODUCT_ID(long pROMOTIONPRODUCT_ID) {
+		PROMOTIONPRODUCT_ID = pROMOTIONPRODUCT_ID;
 	}
 
 
@@ -115,32 +114,32 @@ public class PromotionProduct {
 	}
 
 
-	public String getPROMOTIONPRODCUT_PRICE() {
-		return PROMOTIONPRODCUT_PRICE;
+	public Double getPROMOTIONPRODUCT_PRICE() {
+		return PROMOTIONPRODUCT_PRICE;
 	}
 
 
-	public void setPROMOTIONPRODCUT_PRICE(String pROMOTIONPRODCUT_PRICE) {
-		PROMOTIONPRODCUT_PRICE = pROMOTIONPRODCUT_PRICE;
+	public void setPROMOTIONPRODUCT_PRICE(Double pROMOTIONPRODUCT_PRICE) {
+		PROMOTIONPRODUCT_PRICE = pROMOTIONPRODUCT_PRICE;
 	}
 
 
-	public String getQUANTITY_REQUIRED() {
+	public Double getQUANTITY_REQUIRED() {
 		return QUANTITY_REQUIRED;
 	}
 
 
-	public void setQUANTITY_REQUIRED(String qUANTITY_REQUIRED) {
+	public void setQUANTITY_REQUIRED(Double qUANTITY_REQUIRED) {
 		QUANTITY_REQUIRED = qUANTITY_REQUIRED;
 	}
 
 
-	public String getQUANTITY_BONUS() {
+	public Double getQUANTITY_BONUS() {
 		return QUANTITY_BONUS;
 	}
 
 
-	public void setQUANTITY_BONUS(String qUANTITY_BONUS) {
+	public void setQUANTITY_BONUS(Double qUANTITY_BONUS) {
 		QUANTITY_BONUS = qUANTITY_BONUS;
 	}
 
@@ -155,13 +154,13 @@ public class PromotionProduct {
 	}
 
 
-	public String getPROMOTIONPRODCUT_NOTES() {
-		return PROMOTIONPRODCUT_NOTES;
+	public String getPROMOTIONPRODUCT_NOTES() {
+		return PROMOTIONPRODUCT_NOTES;
 	}
 
 
-	public void setPROMOTIONPRODCUT_NOTES(String pROMOTIONPRODCUT_NOTES) {
-		PROMOTIONPRODCUT_NOTES = pROMOTIONPRODCUT_NOTES;
+	public void setPROMOTIONPRODUCT_NOTES(String pROMOTIONPRODUCT_NOTES) {
+		PROMOTIONPRODUCT_NOTES = pROMOTIONPRODUCT_NOTES;
 	}
 
 
