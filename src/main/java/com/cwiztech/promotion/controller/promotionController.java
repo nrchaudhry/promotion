@@ -45,7 +45,7 @@ public class promotionController {
 	@Autowired
 	private promotionRepository promotionrepository;
 
-	// will only display the ones who are Active "Y"
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<String> get(@RequestHeader(value = "Authorization") String headToken,
@@ -58,7 +58,7 @@ public class promotionController {
 
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
-	// will display every piece of data in database
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/all", method = RequestMethod.GET)
 	public ResponseEntity getAll(@RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
@@ -82,8 +82,6 @@ public class promotionController {
 	}
 
 
-
-	// will give id's in body in form of array and it'll show data of respective id's
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/ids", method = RequestMethod.POST)
 	public ResponseEntity getByIDs(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
@@ -112,7 +110,7 @@ public class promotionController {
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
 		return insertupdateAll(null, new JSONObject(data), apiRequest);
-	} // --> not running
+	} 
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping( method = RequestMethod.PUT)
@@ -206,7 +204,6 @@ public class promotionController {
 		return responseentity;
 	}
 
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity delete(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
@@ -226,7 +223,7 @@ public class promotionController {
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
 		JSONObject promotion = new JSONObject();
-		promotion.put("id", id);
+		promotion.put("promotion_ID", id);
 		promotion.put("isactive", "N");
 
 		return insertupdateAll(null, promotion, apiRequest);
@@ -279,19 +276,19 @@ public class promotionController {
 		List<Promotion> promotions = new ArrayList<Promotion>();
 		JSONObject jsonObj = new JSONObject(data);
 		JSONArray searchObject = new JSONArray();
-		
+
 		String promotionstart_DATE="", promotionend_DATE="";
 
 		long promotiontype_ID=0, promotiondate=0;
 		List<Integer> promotiontype_IDS = new ArrayList<Integer>(); 
-		
-		
+
+
 		boolean isWithDetail = true;
 		if (jsonObj.has("iswithdetail") && !jsonObj.isNull("iswithdetail")) {
 			isWithDetail = jsonObj.getBoolean("iswithdetail");
 		}
 		jsonObj.put("iswithdetail", false);
-		
+
 		if (jsonObj.has("promotionstart_DATE") && !jsonObj.isNull("promotionstart_DATE")) {
 			promotiondate = 1;
 			promotionstart_DATE = jsonObj.getString("promotionstart_DATE");
@@ -310,7 +307,7 @@ public class promotionController {
 			promotionend_DATE = jsonObj.getString("promotionend_DATE");
 		}
 
-		 
+
 		if (jsonObj.has("promotiontype_ID") && !jsonObj.isNull("promotiontype_ID") && jsonObj.getLong("promotiontype_ID") != 0) {
 			promotiontype_ID = jsonObj.getLong("promotiontype_ID");
 			promotiontype_IDS.add((int) promotiontype_ID);
@@ -334,8 +331,7 @@ public class promotionController {
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, isWithDetail).toString(), HttpStatus.OK);
 	}
 
-
-	// getAPIrequest function
+	
 	String getAPIResponse(List<Promotion> promotions, Promotion promotion, JSONArray Jsonpromotions,
 			JSONObject Jsonpromotion, String message, JSONObject apiRequest, boolean isWithDetail)
 					throws JSONException, JsonProcessingException, ParseException, InterruptedException, ExecutionException {
@@ -347,38 +343,40 @@ public class promotionController {
 			rtnAPIResponse = apiRequestLog.apiRequestErrorLog(apiRequest, "promotion", message).toString();
 		} else {
 			if (promotion != null && isWithDetail == true) {
+				List<Integer> lookupList = new ArrayList<Integer>();
+				if (promotion.getPROMOTIONTYPE_ID() != null) {
+					lookupList.add(Integer.parseInt(promotion.getPROMOTIONTYPE_ID().toString()));
 
-			}
-			List<Integer> lookupList = new ArrayList<Integer>();
-			if (promotion.getPROMOTIONTYPE_ID() != null) {
-				lookupList.add(Integer.parseInt(promotion.getPROMOTIONTYPE_ID().toString()));
-				
-				CompletableFuture<JSONArray> lookupFuture = CompletableFuture.supplyAsync(() -> {
-					try {
-						return new JSONArray(ServiceCall.POST("lookup/ids", "{lookups: "+lookupList+"}", apiRequest.getString("access_TOKEN"), true));
-					} catch (JSONException | JsonProcessingException | ParseException e) {
-						e.printStackTrace();
-					    return new JSONArray();
-					}
-				});
-				
-				// Wait until all futures complete
-		        CompletableFuture<Void> allDone =
-		                CompletableFuture.allOf(lookupFuture);
+					CompletableFuture<JSONArray> lookupFuture = CompletableFuture.supplyAsync(() -> {
+						try {
+							return new JSONArray(ServiceCall.POST("lookup/ids", "{lookups: "+lookupList+"}", apiRequest.getString("access_TOKEN"), true));
+						} catch (JSONException | JsonProcessingException | ParseException e) {
+							e.printStackTrace();
+							return new JSONArray();
+						}
+					});
 
-		        // Block until all are done
-		        allDone.join();
-		        
-		        JSONArray lookupObject = lookupFuture.get();	
-				for (int j=0; j<lookupObject.length(); j++) {
-					JSONObject lookup = lookupObject.getJSONObject(j);
-					if (promotion.getPROMOTIONTYPE_ID() != null && promotion.getPROMOTIONTYPE_ID() == lookup.getLong("id") ) {
-						promotion.setPROMOTIONTYPE_DETAIL(lookup.toString());
+					// Wait until all futures complete
+					CompletableFuture<Void> allDone =
+							CompletableFuture.allOf(lookupFuture);
+
+					// Block until all are done
+					allDone.join();
+
+					JSONArray lookupObject = lookupFuture.get();
+
+					for (int j=0; j<lookupObject.length(); j++) {
+						JSONObject lookup = lookupObject.getJSONObject(j);
+						if (promotion.getPROMOTIONTYPE_ID() != null && promotion.getPROMOTIONTYPE_ID() == lookup.getLong("id") ) {
+							promotion.setPROMOTIONTYPE_DETAIL(lookup.toString());
+						}
 					}
+
+					rtnAPIResponse = mapper.writeValueAsString(promotion);
+					apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
+
 				}
 
-				rtnAPIResponse = mapper.writeValueAsString(promotion);
-				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (promotions != null && isWithDetail== false) {
 				rtnAPIResponse = mapper.writeValueAsString(promotions);
