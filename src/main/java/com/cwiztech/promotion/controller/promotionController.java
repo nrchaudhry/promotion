@@ -1,10 +1,13 @@
 package com.cwiztech.promotion.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,6 +31,7 @@ import com.cwiztech.services.ServiceCall;
 import com.cwiztech.token.AccessToken;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.maps.errors.ApiException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,42 +50,44 @@ public class promotionController {
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<String> get(@RequestHeader(value = "Authorization") String headToken,
 			@RequestHeader(value = "LimitGrant") String LimitGrant)
-					throws JsonProcessingException, JSONException, ParseException {
-		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotion/all", null, null, headToken);
+					throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
+		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotion", null, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
 		List<Promotion> promotions = promotionrepository.findActive();
-		
+
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
 	// will display every piece of data in database
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/all", method = RequestMethod.GET)
-	public ResponseEntity getAll(@RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+	public ResponseEntity getAll(@RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
 		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotion/all", null, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
 		List<Promotion> promotions = promotionrepository.findAll();
-		
+
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public ResponseEntity getOne(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+	public ResponseEntity getOne(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
 		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotion/"+id, null, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
 		Promotion promotion = promotionrepository.findOne(id);
-		
+
 		return new ResponseEntity(getAPIResponse(null, promotion, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
+
+
 
 	// will give id's in body in form of array and it'll show data of respective id's
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/ids", method = RequestMethod.POST)
 	public ResponseEntity getByIDs(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
-			throws JsonProcessingException, JSONException, ParseException {
+			throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
 		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotion/ids", data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
@@ -94,26 +100,46 @@ public class promotionController {
 		List<Promotion> promotions = new ArrayList<Promotion>();
 		if (jsonpromotions.length()>0)
 			promotions = promotionrepository.findByIDs(promotion_IDS);
-		
+
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
-	
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity insert(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
+			throws JSONException, ParseException, InterruptedException, ExecutionException, ApiException, InterruptedException, IOException, ExecutionException {
+		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotion", data, null, headToken);
+		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
+
+		return insertupdateAll(null, new JSONObject(data), apiRequest);
+	} // --> not running
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping( method = RequestMethod.PUT)
+	public ResponseEntity updateAll(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
+			throws JSONException, ParseException, InterruptedException, ExecutionException, ApiException, InterruptedException, IOException, ExecutionException {
+		JSONObject apiRequest = AccessToken.checkToken("PUT", "/promotion", data, null, headToken);
+		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
+
+		return insertupdateAll(new JSONArray(data), null, apiRequest);
+	} 
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity update(@PathVariable Long id, @RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
-			throws JsonProcessingException, JSONException, ParseException {
-		
+			throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
+
 		JSONObject apiRequest = AccessToken.checkToken("PUT", "/promotion/"+id, data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 		JSONObject jsonObj = new JSONObject(data);
 		jsonObj.put("promotion_ID", id);
-		
+
 		return insertupdateAll(null, jsonObj, apiRequest);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
-	public ResponseEntity insertupdateAll(JSONArray jsonPromotions, JSONObject jsonPromotion, JSONObject apiRequest) throws JsonProcessingException, JSONException, ParseException {
-	    SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public ResponseEntity insertupdateAll(JSONArray jsonPromotions, JSONObject jsonPromotion, JSONObject apiRequest) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
+		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 
 		List<Promotion> promotions = new ArrayList<Promotion>();
@@ -121,25 +147,25 @@ public class promotionController {
 			jsonPromotions = new JSONArray();
 			jsonPromotions.put(jsonPromotion);
 		}
-		
-		for (int i=0; i<jsonPromotion.length(); i++) {
+
+		for (int i=0; i<jsonPromotions.length(); i++) {
 			JSONObject jsonObj = jsonPromotions.getJSONObject(i);
 			Promotion promotion = new  Promotion();
 			long id=0; 
-			
-			if (jsonObj.has("PROMOTIONPRODCUT_ID")) {
-				id = jsonObj.getLong("PROMOTIONPRODCUT_ID");
+
+			if (jsonObj.has("promotion_ID")) {
+				id = jsonObj.getLong("promotion_ID");
 				if (id!=0) {
 					promotion = promotionrepository.findOne(id);
 				}
 			}
-			
+
 			if (id == 0) {
 				if (!jsonObj.has("promotion_TITLE")  || jsonObj.isNull("promotion_TITLE") ) {
 					return new ResponseEntity(getAPIResponse(null, null , null, null, "promotion_TITLE are missing", apiRequest, true), HttpStatus.OK);
 				}
 			}
-			
+
 			if (jsonObj.has("promotion_TITLE") && !jsonObj.isNull("promotion_TITLE"))
 				promotion.setPROMOTION_TITLE(jsonObj.getString("promotion_TITLE"));
 
@@ -162,15 +188,16 @@ public class promotionController {
 				promotion.setISACTIVE("Y");
 			else if (jsonObj.has("isactive") && !jsonObj.isNull("isactive"))
 				promotion.setISACTIVE(jsonObj.getString("isactive"));
-			
+
 			promotion.setMODIFIED_BY(apiRequest.getLong("request_ID"));
 			promotion.setMODIFIED_WORKSTATION(apiRequest.getString("log_WORKSTATION"));
 			promotion.setMODIFIED_WHEN(dateFormat1.format(date));
 
+			promotion = promotionrepository.save(promotion);
 			promotions.add(promotion);
 		}
-		
-	
+
+
 		ResponseEntity responseentity;
 		if (jsonPromotion != null)
 			responseentity = new ResponseEntity(getAPIResponse(null, promotions.get(0), null, null, null, apiRequest, true).toString(), HttpStatus.OK);
@@ -178,42 +205,48 @@ public class promotionController {
 			responseentity = new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 		return responseentity;
 	}
-	
+
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity delete(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+	public ResponseEntity delete(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
 		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotion/"+id, null, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
 		Promotion promotion = promotionrepository.findOne(id);
 		promotionrepository.delete(promotion);
-		
+
 		return new ResponseEntity(getAPIResponse(null, promotion, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/remove/{id}", method = RequestMethod.GET)
-	public ResponseEntity remove(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+	public ResponseEntity remove(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
 		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotion/"+id, null, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
-		
+
 		JSONObject promotion = new JSONObject();
 		promotion.put("id", id);
 		promotion.put("isactive", "N");
-		
+
 		return insertupdateAll(null, promotion, apiRequest);
 	}
-	
+
+	@SuppressWarnings({ "rawtypes" })
+	@RequestMapping(value = "/search", method = RequestMethod.POST)
+	public ResponseEntity getBySearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
+
+		return BySearch(data, true, headToken, LimitGrant);
+	}
 
 	@SuppressWarnings({ "rawtypes" })
 	@RequestMapping(value = "/search/all", method = RequestMethod.POST)
-	public ResponseEntity getAllBySearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+	public ResponseEntity getAllBySearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
 		return BySearch(data, false, headToken, LimitGrant);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ResponseEntity BySearch(String data, boolean active, String headToken, String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+	public ResponseEntity BySearch(String data, boolean active, String headToken, String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
 		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotion/search" + ((active == true) ? "" : "/all"), data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
@@ -221,61 +254,91 @@ public class promotionController {
 
 		List<Promotion> promotions = ((active == true)
 				? promotionrepository.findBySearch("%" + jsonObj.getString("search") + "%")
-				: promotionrepository.findAllBySearch("%" + jsonObj.getString("search") + "%"));
-		
+						: promotionrepository.findAllBySearch("%" + jsonObj.getString("search") + "%"));
+
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
 
 	@SuppressWarnings({ "rawtypes" })
 	@RequestMapping(value = "/advancedsearch", method = RequestMethod.POST)
-	public ResponseEntity getByAdvancedSearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+	public ResponseEntity getByAdvancedSearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
 		return ByAdvancedSearch(data, true, headToken, LimitGrant);
 	}
 
 	@SuppressWarnings({ "rawtypes" })
 	@RequestMapping(value = "/advancedsearch/all", method = RequestMethod.POST)
-	public ResponseEntity getAllByAdvancedSearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+	public ResponseEntity getAllByAdvancedSearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
 		return ByAdvancedSearch(data, false, headToken, LimitGrant);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ResponseEntity ByAdvancedSearch(String data, boolean active, String headToken, String LimitGrant) throws JsonProcessingException, JSONException, ParseException {
+	public ResponseEntity ByAdvancedSearch(String data, boolean active, String headToken, String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
 		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotion/advancedsearch" + ((active == true) ? "" : "/all"), data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
-		
+
 		List<Promotion> promotions = new ArrayList<Promotion>();
 		JSONObject jsonObj = new JSONObject(data);
-        JSONArray searchObject = new JSONArray();
+		JSONArray searchObject = new JSONArray();
+		
+		String promotionstart_DATE="", promotionend_DATE="";
 
-        boolean isWithDetail = true;
-        if (jsonObj.has("iswithdetail") && !jsonObj.isNull("iswithdetail")) {
-            isWithDetail = jsonObj.getBoolean("iswithdetail");
-        }
-        jsonObj.put("iswithdetail", false);
-        
-        long promotiontype_ID=0;
-      
-		if (jsonObj.has("promotiontype_ID") && !jsonObj.isNull("promotiontype_ID"))
-			promotiontype_ID = jsonObj.getLong("promotiontype_ID");
-		else if (jsonObj.has("promotiontype_CODE") && !jsonObj.isNull("promotiontype_CODE")) {
-			JSONObject promotiontype = new JSONObject(ServiceCall.POST("lookup/bycode", "{entityname: 'CREDITTERMS', code: "+jsonObj.getString("promotiontype_CODE")+"}", apiRequest.getString("access_TOKEN"), true));
-			if (promotiontype  != null)
-				promotiontype_ID = promotiontype.getLong("id");
+		long promotiontype_ID=0, promotiondate=0;
+		List<Integer> promotiontype_IDS = new ArrayList<Integer>(); 
+		
+		
+		boolean isWithDetail = true;
+		if (jsonObj.has("iswithdetail") && !jsonObj.isNull("iswithdetail")) {
+			isWithDetail = jsonObj.getBoolean("iswithdetail");
+		}
+		jsonObj.put("iswithdetail", false);
+		
+		if (jsonObj.has("promotionstart_DATE") && !jsonObj.isNull("promotionstart_DATE")) {
+			promotiondate = 1;
+			promotionstart_DATE = jsonObj.getString("promotionstart_DATE");
+			promotionend_DATE = jsonObj.getString("promotionend_DATE");
+		} else if (jsonObj.has("promotionstart_DATE") && !jsonObj.isNull("promotionstart_DATE") && jsonObj.has("promotionend_DATE") && !jsonObj.isNull("promotionend_DATE")) {
+			promotiondate = 1;
+			promotionstart_DATE = jsonObj.getString("promotionstart_DATE");
+			promotionend_DATE = jsonObj.getString("promotionend_DATE");
+		} else if (jsonObj.has("promotionstart_DATE") && !jsonObj.isNull("promotionstart_DATE")) {
+			promotiondate = 1;
+			promotionstart_DATE = jsonObj.getString("promotionstart_DATE");
+			promotionend_DATE = jsonObj.getString("promotionstart_DATE");
+		} else if (jsonObj.has("promotionend_DATE") && !jsonObj.isNull("promotionend_DATE")) {
+			promotiondate = 1;
+			promotionstart_DATE = jsonObj.getString("promotionend_DATE");
+			promotionend_DATE = jsonObj.getString("promotionend_DATE");
 		}
 
+		 
+		if (jsonObj.has("promotiontype_ID") && !jsonObj.isNull("promotiontype_ID") && jsonObj.getLong("promotiontype_ID") != 0) {
+			promotiontype_ID = jsonObj.getLong("promotiontype_ID");
+			promotiontype_IDS.add((int) promotiontype_ID);
+		} else if (jsonObj.has("promotiontype") && !jsonObj.isNull("promotiontype") && jsonObj.getLong("promotiontype") != 0) {
+			if (active == true) {
+				searchObject = new JSONArray(ServiceCall.POST("promotiontype/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
+			} else {
+				searchObject = new JSONArray(ServiceCall.POST("promotiontype/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
+			}
+
+			promotiontype_ID = searchObject.length();
+			for (int i=0; i<searchObject.length(); i++) {
+				promotiontype_IDS.add((int) searchObject.getJSONObject(i).getLong("promotiontype_ID"));
+			}
+		}
 		if (promotiontype_ID != 0) {
-		 promotions = ((active == true)
-				? promotionrepository.findByAdvancedSearch(promotiontype_ID)
-				: promotionrepository.findAllByAdvancedSearch(promotiontype_ID));
+			promotions = ((active == true)
+					? promotionrepository.findByAdvancedSearch(promotiontype_ID, promotionstart_DATE, promotionend_DATE, promotiondate)
+							: promotionrepository.findAllByAdvancedSearch(promotiontype_ID, promotionstart_DATE, promotionend_DATE, promotiondate));
 		}
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, isWithDetail).toString(), HttpStatus.OK);
 	}
-	
+
 
 	// getAPIrequest function
 	String getAPIResponse(List<Promotion> promotions, Promotion promotion, JSONArray Jsonpromotions,
 			JSONObject Jsonpromotion, String message, JSONObject apiRequest, boolean isWithDetail)
-					throws JSONException, JsonProcessingException, ParseException {
+					throws JSONException, JsonProcessingException, ParseException, InterruptedException, ExecutionException {
 
 		ObjectMapper mapper = new ObjectMapper();
 		String rtnAPIResponse = "Invalid Response";
@@ -283,19 +346,49 @@ public class promotionController {
 		if (message != null) {
 			rtnAPIResponse = apiRequestLog.apiRequestErrorLog(apiRequest, "promotion", message).toString();
 		} else {
-			if (promotion != null && isWithDetail) {
+			if (promotion != null && isWithDetail == true) {
+
+			}
+			List<Integer> lookupList = new ArrayList<Integer>();
+			if (promotion.getPROMOTIONTYPE_ID() != null) {
+				lookupList.add(Integer.parseInt(promotion.getPROMOTIONTYPE_ID().toString()));
+				
+				CompletableFuture<JSONArray> lookupFuture = CompletableFuture.supplyAsync(() -> {
+					try {
+						return new JSONArray(ServiceCall.POST("lookup/ids", "{lookups: "+lookupList+"}", apiRequest.getString("access_TOKEN"), true));
+					} catch (JSONException | JsonProcessingException | ParseException e) {
+						e.printStackTrace();
+					    return new JSONArray();
+					}
+				});
+				
+				// Wait until all futures complete
+		        CompletableFuture<Void> allDone =
+		                CompletableFuture.allOf(lookupFuture);
+
+		        // Block until all are done
+		        allDone.join();
+		        
+		        JSONArray lookupObject = lookupFuture.get();	
+				for (int j=0; j<lookupObject.length(); j++) {
+					JSONObject lookup = lookupObject.getJSONObject(j);
+					if (promotion.getPROMOTIONTYPE_ID() != null && promotion.getPROMOTIONTYPE_ID() == lookup.getLong("id") ) {
+						promotion.setPROMOTIONTYPE_DETAIL(lookup.toString());
+					}
+				}
+
 				rtnAPIResponse = mapper.writeValueAsString(promotion);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (promotions != null && isWithDetail) {
+			} else if (promotions != null && isWithDetail== false) {
 				rtnAPIResponse = mapper.writeValueAsString(promotions);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (promotion != null && !isWithDetail) {
+			} else if (promotion != null && !isWithDetail == false) {
 				rtnAPIResponse = mapper.writeValueAsString(promotion);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (promotions != null && !isWithDetail) {
+			} else if (promotions != null ) {
 				rtnAPIResponse = mapper.writeValueAsString(promotions);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 

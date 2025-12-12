@@ -28,16 +28,27 @@ public interface promotionRepository extends JpaRepository<Promotion, Long> {
 			+ "where PROMOTION_ID like ?1 or  PROMOTION_TITLE like ?1 or  PROMOTION_DESCRIPTION like ?1 ", nativeQuery = true)
 	public List<Promotion> findAllBySearch(String search);
 
-	@Query(value = "select * from tblpromotionproduct " 
-			+ "where (PROMOTIONTYPE_ID LIKE CASE WHEN :PROMOTIONTYPE_ID = 0 Then PROMOTIONTYPE_ID ELSE :PROMOTIONTYPE_ID END or PROMOTIONTYPE_ID is NULL) "
-			+ "and ISACTIVE='Y'", nativeQuery = true)
+	@Query(value = "SELECT * FROM TBLPROMOTION "
+	        + "WHERE (PROMOTIONSTART_DATE >= CASE WHEN :promotiondate = 0 THEN PROMOTIONSTART_DATE ELSE :promotionstart_DATE END OR PROMOTIONSTART_DATE IS NULL) "
+	        + "AND (PROMOTIONEND_DATE <= CASE WHEN :promotiondate = 0 THEN PROMOTIONEND_DATE ELSE :promotionend_DATE END OR PROMOTIONEND_DATE IS NULL) "
+	        + "AND (PROMOTIONTYPE_ID = CASE WHEN :promotiontype_ID = 0 THEN PROMOTIONTYPE_ID ELSE :promotiontype_ID END OR PROMOTIONTYPE_ID IS NULL) "
+	        + "AND ISACTIVE='Y'", nativeQuery = true)
 	List<Promotion> findByAdvancedSearch(
-			@Param("PROMOTIONTYPE_ID") Long PROMOTIONTYPE_ID);
+	        @Param("promotiontype_ID") Long promotiontype_ID,
+	        @Param("promotionstart_DATE") String promotionstart_DATE,
+	        @Param("promotionend_DATE") String promotionend_DATE,
+	        @Param("promotiondate") Long promotiondate);
 
 
-	@Query(value = "select * from tblpromotionproduct " 
-			+ "where (PROMOTIONTYPE_ID LIKE CASE WHEN :PROMOTIONTYPE_ID = 0 Then PROMOTIONTYPE_ID ELSE :PROMOTIONTYPE_ID END or PROMOTIONTYPE_ID is NULL) "
-			+ "", nativeQuery = true)
-	List<Promotion> findAllByAdvancedSearch(   
-			@Param("PROMOTIONTYPE_ID") Long PROMOTIONTYPE_ID);
+	@Query(value = "SELECT * FROM TBLPROMOTION "
+	        + "WHERE (PROMOTIONSTART_DATE >= CASE WHEN :promotiondate = 0 THEN PROMOTIONSTART_DATE ELSE :promotionstart_DATE END OR PROMOTIONSTART_DATE IS NULL) "
+	        + "AND (PROMOTIONEND_DATE <= CASE WHEN :promotiondate = 0 THEN PROMOTIONEND_DATE ELSE :promotionend_DATE END OR PROMOTIONEND_DATE IS NULL) "
+	        + "AND (PROMOTIONTYPE_ID = CASE WHEN :promotiontype_ID = 0 THEN PROMOTIONTYPE_ID ELSE :promotiontype_ID END OR PROMOTIONTYPE_ID IS NULL)",
+	        nativeQuery = true)
+	List<Promotion> findAllByAdvancedSearch(
+	        @Param("promotiontype_ID") Long promotiontype_ID,
+	        @Param("promotionstart_DATE") String promotionstart_DATE,
+	        @Param("promotionend_DATE") String promotionend_DATE,
+	        @Param("promotiondate") Long promotiondate);
+
 }

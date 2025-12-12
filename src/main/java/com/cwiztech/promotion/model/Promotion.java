@@ -26,14 +26,14 @@ public class Promotion {
 	
 	
 	@Column(name = "PROMOTIONTYPE_ID")
-	private long PROMOTIONTYPE_ID;
+	private Long PROMOTIONTYPE_ID;
 	
 	@Transient
 	private String PROMOTIONTYPE_DETAIL;
 	
 	
 	@Column(name = "DISCOUNT_PERCENTAGE")
-	private long DISCOUNT_PERCENTAGE;
+	private Long DISCOUNT_PERCENTAGE;
 	
 	
 	@Column(name = "PROMOTIONSTART_DATE")
@@ -59,6 +59,7 @@ public class Promotion {
 	@Column(name = "MODIFIED_WORKSTATION")
 	private String MODIFIED_WORKSTATION;
 
+	
 	public long getPROMOTION_ID() {
 		return PROMOTION_ID;
 	}
@@ -83,11 +84,11 @@ public class Promotion {
 		PROMOTION_DESCRIPTION = pROMOTION_DESCRIPTION;
 	}
 
-	public long getPROMOTIONTYPE_ID() {
+	public Long getPROMOTIONTYPE_ID() {
 		return PROMOTIONTYPE_ID;
 	}
 
-	public void setPROMOTIONTYPE_ID(long pROMOTIONTYPE_ID) {
+	public void setPROMOTIONTYPE_ID(Long pROMOTIONTYPE_ID) {
 		PROMOTIONTYPE_ID = pROMOTIONTYPE_ID;
 	}
 
@@ -99,11 +100,11 @@ public class Promotion {
 		PROMOTIONTYPE_DETAIL = pROMOTIONTYPE_DETAIL;
 	}
 
-	public long getDISCOUNT_PERCENTAGE() {
+	public Long getDISCOUNT_PERCENTAGE() {
 		return DISCOUNT_PERCENTAGE;
 	}
 
-	public void setDISCOUNT_PERCENTAGE(long dISCOUNT_PERCENTAGE) {
+	public void setDISCOUNT_PERCENTAGE(Long dISCOUNT_PERCENTAGE) {
 		DISCOUNT_PERCENTAGE = dISCOUNT_PERCENTAGE;
 	}
 
