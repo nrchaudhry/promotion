@@ -69,6 +69,6 @@ public class EndpointsListener implements ApplicationListener<ContextRefreshedEv
 		String appPath = EndpointsListener.oauthapplicationPath;
 
 		HttpEntity<String> entity = new HttpEntity<String>(applicationServices.toString().replace("\"", "'"), headers);
-		// restTemplate.exchange(appPath + "microservice", HttpMethod.PUT, entity, String.class);
+		restTemplate.exchange(appPath + "microservice", HttpMethod.PUT, entity, String.class);
     }
 } 
