@@ -44,7 +44,6 @@ public class promotionController {
 
 	@Autowired
 	private promotionRepository promotionrepository;
-
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.GET)
@@ -277,9 +276,9 @@ public class promotionController {
 		JSONObject jsonObj = new JSONObject(data);
 		JSONArray searchObject = new JSONArray();
 
-		String promotionstart_DATE="", promotionend_DATE="";
+		String promotionstart_DATEFROM="", promotionstart_DATETO="", promotionend_DATEFROM="", promotionend_DATETO = "";
 
-		long promotiontype_ID=0, promotiondate=0;
+		long promotiontype_ID=0, promotionstartdate=0, promotionenddate=0;
 		List<Integer> promotiontype_IDS = new ArrayList<Integer>(); 
 
 
@@ -290,23 +289,40 @@ public class promotionController {
 		jsonObj.put("iswithdetail", false);
 
 		if (jsonObj.has("promotionstart_DATE") && !jsonObj.isNull("promotionstart_DATE")) {
-			promotiondate = 1;
-			promotionstart_DATE = jsonObj.getString("promotionstart_DATE");
-			promotionend_DATE = jsonObj.getString("promotionend_DATE");
-		} else if (jsonObj.has("promotionstart_DATE") && !jsonObj.isNull("promotionstart_DATE") && jsonObj.has("promotionend_DATE") && !jsonObj.isNull("promotionend_DATE")) {
-			promotiondate = 1;
-			promotionstart_DATE = jsonObj.getString("promotionstart_DATE");
-			promotionend_DATE = jsonObj.getString("promotionend_DATE");
-		} else if (jsonObj.has("promotionstart_DATE") && !jsonObj.isNull("promotionstart_DATE")) {
-			promotiondate = 1;
-			promotionstart_DATE = jsonObj.getString("promotionstart_DATE");
-			promotionend_DATE = jsonObj.getString("promotionstart_DATE");
-		} else if (jsonObj.has("promotionend_DATE") && !jsonObj.isNull("promotionend_DATE")) {
-			promotiondate = 1;
-			promotionstart_DATE = jsonObj.getString("promotionend_DATE");
-			promotionend_DATE = jsonObj.getString("promotionend_DATE");
+			promotionstartdate = 1;
+			promotionstart_DATEFROM = jsonObj.getString("promotionstart_DATE");
+			promotionstart_DATETO = jsonObj.getString("promotionend_DATE");
+		} else if (jsonObj.has("promotionstart_DATEFROM") && !jsonObj.isNull("promotionstart_DATEFROM") && jsonObj.has("promotionstart_DATETO") && !jsonObj.isNull("promotionstart_DATETO")) {
+			promotionstartdate = 1;
+			promotionstart_DATEFROM = jsonObj.getString("promotionstart_DATEFROM");
+			promotionstart_DATETO = jsonObj.getString("promotionstart_DATETO");
+		} else if (jsonObj.has("promotionstart_DATEFROM") && !jsonObj.isNull("promotionstart_DATEFROM")) {
+			promotionstartdate = 1;
+			promotionstart_DATEFROM = jsonObj.getString("promotionstart_DATEFROM");
+			promotionstart_DATETO = jsonObj.getString("promotionstart_DATEFROM");
+		} else if (jsonObj.has("promotionstart_DATETO") && !jsonObj.isNull("promotionstart_DATETO")) {
+			promotionstartdate = 1;
+			promotionstart_DATEFROM = jsonObj.getString("promotionstart_DATETO");
+			promotionstart_DATETO = jsonObj.getString("promotionstart_DATETO");
 		}
 
+		if (jsonObj.has("promotionend_DATE") && !jsonObj.isNull("promotionend_DATE")) {
+			promotionenddate = 1;
+			promotionend_DATEFROM = jsonObj.getString("promotionend_DATE");
+			promotionend_DATETO = jsonObj.getString("promotionend_DATE");
+		} else if (jsonObj.has("promotionend_DATEFROM") && !jsonObj.isNull("promotionend_DATEFROM") && jsonObj.has("promotionend_DATETO") && !jsonObj.isNull("promotionend_DATETO")) {
+			promotionenddate = 1;
+			promotionend_DATEFROM = jsonObj.getString("promotionend_DATEFROM");
+			promotionend_DATETO = jsonObj.getString("promotionend_DATETO");
+		} else if (jsonObj.has("promotionend_DATEFROM") && !jsonObj.isNull("promotionend_DATEFROM")) {
+			promotionenddate = 1;
+			promotionend_DATEFROM = jsonObj.getString("promotionend_DATEFROM");
+			promotionend_DATETO = jsonObj.getString("promotionend_DATEFROM");
+		} else if (jsonObj.has("promotionend_DATETO") && !jsonObj.isNull("promotionend_DATETO")) {
+			promotionenddate = 1;
+			promotionend_DATEFROM = jsonObj.getString("promotionend_DATETO");
+			promotionend_DATETO = jsonObj.getString("promotionend_DATETO");
+		}
 
 		if (jsonObj.has("promotiontype_ID") && !jsonObj.isNull("promotiontype_ID") && jsonObj.getLong("promotiontype_ID") != 0) {
 			promotiontype_ID = jsonObj.getLong("promotiontype_ID");
@@ -325,8 +341,8 @@ public class promotionController {
 		}
 		if (promotiontype_ID != 0) {
 			promotions = ((active == true)
-					? promotionrepository.findByAdvancedSearch(promotiontype_ID, promotionstart_DATE, promotionend_DATE, promotiondate)
-							: promotionrepository.findAllByAdvancedSearch(promotiontype_ID, promotionstart_DATE, promotionend_DATE, promotiondate));
+					? promotionrepository.findByAdvancedSearch(promotiontype_ID, promotionstartdate, promotionstart_DATEFROM, promotionstart_DATETO, promotionenddate, promotionend_DATEFROM, promotionend_DATETO)
+							: promotionrepository.findAllByAdvancedSearch(promotiontype_ID, promotionstartdate, promotionstart_DATEFROM, promotionstart_DATETO, promotionenddate, promotionend_DATEFROM, promotionend_DATETO));
 		}
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, isWithDetail).toString(), HttpStatus.OK);
 	}
@@ -371,12 +387,14 @@ public class promotionController {
 							promotion.setPROMOTIONTYPE_DETAIL(lookup.toString());
 						}
 					}
-
-					rtnAPIResponse = mapper.writeValueAsString(promotion);
-					apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
-
 				}
+			
+				rtnAPIResponse = mapper.writeValueAsString(promotion);
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
+			} else if (promotions != null && isWithDetail== true) {
+				rtnAPIResponse = mapper.writeValueAsString(promotions);
+				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (promotions != null && isWithDetail== false) {
 				rtnAPIResponse = mapper.writeValueAsString(promotions);
@@ -386,12 +404,12 @@ public class promotionController {
 				rtnAPIResponse = mapper.writeValueAsString(promotion);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (promotions != null ) {
+			} else if (Jsonpromotions != null ) {
 				rtnAPIResponse = mapper.writeValueAsString(promotions);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (Jsonpromotions != null) {
-				rtnAPIResponse = Jsonpromotions.toString();
+			} else if (Jsonpromotion != null) {
+				rtnAPIResponse = Jsonpromotion.toString();
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 			}
 		}
