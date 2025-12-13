@@ -155,16 +155,16 @@ public class promotionProductController<promotionproduct> {
 			PromotionProduct promotionproduct = new  PromotionProduct();
 			long id=0; 
 
-			if (jsonObj.has("PROMOTIONPRODCUT_ID")) {
-				id = jsonObj.getLong("PROMOTIONPRODCUT_ID");
+			if (jsonObj.has("promotionprodcut_ID")) {
+				id = jsonObj.getLong("promotionprodcut_ID");
 				if (id!=0) {
 					promotionproduct = promotionproductrepository.findOne(id);
 				}
 			}
 
 			if (id == 0) {
-				if (!jsonObj.has("PROMOTIONPRODCUT_ID") && jsonObj.isNull("PROMOTIONPRODCUT_ID")) {
-					return new ResponseEntity(getAPIResponse(null, null , null, null, "PROMOTIONPRODCUT_ID are missing", apiRequest, true), HttpStatus.OK);
+				if (!jsonObj.has("promotionprodcut_ID") && jsonObj.isNull("promotionprodcut_ID")) {
+					return new ResponseEntity(getAPIResponse(null, null , null, null, "promotionprodcut_ID are missing", apiRequest, true), HttpStatus.OK);
 				}
 			}
 
@@ -212,8 +212,7 @@ public class promotionProductController<promotionproduct> {
 			responseentity = new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
 		return responseentity;
 	}
-
-
+	
 	// we delete the id that we enter  in api 
 	// first we find & then we delete
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -267,8 +266,7 @@ public class promotionProductController<promotionproduct> {
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.BAD_REQUEST);
 
 		JSONObject jsonObj = new JSONObject(data);
-
-
+		
 		// If active == true  ,  Calls findBySearch() → active records only
 		// Else  ,   Calls findAllBySearch() → all records
 

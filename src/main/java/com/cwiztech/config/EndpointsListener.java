@@ -1,4 +1,4 @@
- package com.cwiztech.config;
+  package com.cwiztech.config;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
