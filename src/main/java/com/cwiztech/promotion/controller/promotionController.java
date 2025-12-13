@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cwiztech.log.apiRequestLog;
 import com.cwiztech.promotion.model.Promotion;
-import com.cwiztech.promotion.model.PromotionProduct;
 import com.cwiztech.promotion.repository.promotionRepository;
 import com.cwiztech.services.ServiceCall;
 import com.cwiztech.token.AccessToken;
@@ -393,6 +392,41 @@ public class promotionController {
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (promotions != null && isWithDetail== true) {
+				
+				if (promotions.size()>0) {
+					List<Integer> lookupList = new ArrayList<Integer>();
+					
+					for (int i=0; i<promotions.size(); i++) {
+						if (promotions.get(i).getPROMOTIONTYPE_ID() != null) {
+							lookupList.add(Integer.parseInt(promotions.get(i).getPROMOTIONTYPE_ID().toString()));
+						}
+					}
+					CompletableFuture<JSONArray> lookupFuture = CompletableFuture.supplyAsync(() -> {
+						try {
+							return new JSONArray(ServiceCall.POST("lookup/ids", "{lookups: "+lookupList+"}", apiRequest.getString("access_TOKEN"), true));
+						} catch (JSONException | JsonProcessingException | ParseException e) {
+							e.printStackTrace();
+						    return new JSONArray();
+						}
+					});
+					
+					// Wait until all futures complete
+			        CompletableFuture<Void> allDone =
+			                CompletableFuture.allOf(lookupFuture);
+
+			        // Block until all are done
+			        allDone.join();
+			        
+			        JSONArray lookups = lookupFuture.get();
+			        
+			        for (int i=0; i<promotions.size(); i++) {
+			        	for (int j=0; j<lookups.length(); j++) {
+			        		if (promotions.get(i).getPROMOTIONTYPE_ID() != null && promotions.get(i).getPROMOTIONTYPE_ID() == lookups.getJSONObject(j).getLong("id") ) {
+								promotions.get(i).setPROMOTIONTYPE_DETAIL(lookups.getJSONObject(j).toString());
+							}
+			        	}
+			        }
+				}
 				rtnAPIResponse = mapper.writeValueAsString(promotions);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
