@@ -11,20 +11,20 @@ import com.cwiztech.promotion.model.Promotion;
 
 public interface promotionRepository extends JpaRepository<Promotion, Long> {
 
-	@Query(value = "select * from tblpromotion where ISACTIVE='Y'", nativeQuery = true)
+	@Query(value = "select * from TBLPROMOTION where ISACTIVE='Y'", nativeQuery = true)
 	public List<Promotion> findActive();
 
-	@Query(value = "select * from tblpromotion "
+	@Query(value = "select * from TBLPROMOTION "
 			+ "where PROMOTION_ID in (:ids) "
 			+ "", nativeQuery = true)
 	public List<Promotion> findByIDs(@Param("ids") List<Integer> ids);
 
-	@Query(value = "select * from tblpromotion "
+	@Query(value = "select * from TBLPROMOTION "
 			+ "where (PROMOTION_TITLE like ?1 or  PROMOTION_DESCRIPTION like ?1) "
 			+ "and ISACTIVE='Y'", nativeQuery = true)
 	public List<Promotion> findBySearch(String search);
 
-	@Query(value = "select * from tblpromotion "
+	@Query(value = "select * from TBLPROMOTION "
 			+ "where PROMOTION_TITLE like ?1 or  PROMOTION_DESCRIPTION like ?1 ", nativeQuery = true)
 	public List<Promotion> findAllBySearch(String search);
 

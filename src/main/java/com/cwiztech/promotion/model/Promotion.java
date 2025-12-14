@@ -11,7 +11,7 @@ import javax.persistence.Transient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="tblpromotion")
+@Table(name="TBLPROMOTION")
 public class Promotion {
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
