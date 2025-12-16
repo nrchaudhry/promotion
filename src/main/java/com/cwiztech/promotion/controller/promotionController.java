@@ -169,6 +169,15 @@ public class promotionController {
 
 			if (jsonObj.has("promotiontype_ID") && !jsonObj.isNull("promotiontype_ID"))
 				promotion.setPROMOTIONTYPE_ID(jsonObj.getLong("promotiontype_ID"));
+			else if (jsonObj.has("promotiontype_CODE") && !jsonObj.isNull("promotiontype_CODE")) {
+				JSONObject promotiontype = new JSONObject(ServiceCall.POST("lookup/bycode", "{entityname: 'PROMOTIONTYPE', code: "+jsonObj.getString("promotiontype_CODE")+"}", apiRequest.getString("access_TOKEN"), true));
+				if (promotiontype != null)
+					promotion.setPROMOTIONTYPE_ID(promotiontype.getLong("id"));
+			} else if (id == 0) {
+				JSONObject promotiontype = new JSONObject(ServiceCall.POST("lookup/bycode", "{entityname: 'PROMOTIONTYPE', code: 'Not Assigned'}", apiRequest.getString("access_TOKEN"), true));
+				if (promotiontype != null)
+				promotion.setPROMOTIONTYPE_ID(jsonObj.getLong("promotiontype_ID"));
+			}
 
 			if (jsonObj.has("discount_PERCENTAGE") && !jsonObj.isNull("discount_PERCENTAGE"))
 				promotion.setDISCOUNT_PERCENTAGE(jsonObj.getLong("discount_PERCENTAGE"));
@@ -191,7 +200,6 @@ public class promotionController {
 			promotion = promotionrepository.save(promotion);
 			promotions.add(promotion);
 		}
-
 
 		ResponseEntity responseentity;
 		if (jsonPromotion != null)
