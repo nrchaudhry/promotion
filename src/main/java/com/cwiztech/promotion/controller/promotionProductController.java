@@ -75,8 +75,6 @@ public class promotionProductController<promotionproduct> {
 
 		return new ResponseEntity(getAPIResponse(null, promotionproduct, null, null, null, apiRequest, true), HttpStatus.OK);
 	}
-
-
 	// will give id's in body in form of array and it'll show data of that id's
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/ids", method = RequestMethod.POST)
@@ -102,7 +100,6 @@ public class promotionProductController<promotionproduct> {
 		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
 
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity insert(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
@@ -123,7 +120,6 @@ public class promotionProductController<promotionproduct> {
 		return insertupdateAll(new JSONArray(data), null, apiRequest);
 	}
 
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity update(@PathVariable Long id, @RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
@@ -137,7 +133,6 @@ public class promotionProductController<promotionproduct> {
 
 		return insertupdateAll(null, jsonObj, apiRequest);
 	}
-
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ResponseEntity insertupdateAll(JSONArray jsonpromotionproducts, JSONObject jsonpromotionproduct, JSONObject apiRequest) throws JSONException, ParseException, InterruptedException, ExecutionException, ApiException, InterruptedException, IOException, ExecutionException {
@@ -353,7 +348,6 @@ public class promotionProductController<promotionproduct> {
 		}
 		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, isWithDetail).toString(), HttpStatus.OK);
 	}
-
 
 	//getAPI response Function
 	String getAPIResponse(List<PromotionProduct> promotionproducts, PromotionProduct promotionproduct, JSONArray Jsonpromotionproducts, JSONObject Jsonpromotionproduct, String message, JSONObject apiRequest, boolean isWithDetail) throws JSONException, JsonProcessingException, ParseException, InterruptedException, ExecutionException {
