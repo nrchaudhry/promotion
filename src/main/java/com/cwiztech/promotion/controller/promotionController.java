@@ -159,6 +159,14 @@ public class promotionController {
 				if (!jsonObj.has("promotion_TITLE")  || jsonObj.isNull("promotion_TITLE") ) {
 					return new ResponseEntity(getAPIResponse(null, null , null, null, "promotion_TITLE are missing", apiRequest, true), HttpStatus.OK);
 				}
+
+				if (!jsonObj.has("promotionstart_DATE")  || jsonObj.isNull("promotionstart_DATE") ) {
+					return new ResponseEntity(getAPIResponse(null, null , null, null, "promotionstart_DATE are missing", apiRequest, true), HttpStatus.OK);
+				}
+
+				if (!jsonObj.has("promotionend_DATE")  || jsonObj.isNull("promotionend_DATE") ) {
+					return new ResponseEntity(getAPIResponse(null, null , null, null, "promotionend_DATE are missing", apiRequest, true), HttpStatus.OK);
+				}
 			}
 
 			if (jsonObj.has("promotion_TITLE") && !jsonObj.isNull("promotion_TITLE"))
@@ -174,7 +182,7 @@ public class promotionController {
 				if (promotiontype != null)
 					promotion.setPROMOTIONTYPE_ID(promotiontype.getLong("id"));
 			} else if (id == 0) {
-				JSONObject promotiontype = new JSONObject(ServiceCall.POST("lookup/bycode", "{entityname: 'PROMOTIONTYPE', code: 'Not Assigned'}", apiRequest.getString("access_TOKEN"), true));
+				JSONObject promotiontype = new JSONObject(ServiceCall.POST("lookup/bycode", "{entityname: 'PROMOTIONTYPE', code: 'DISCOUNT'}", apiRequest.getString("access_TOKEN"), true));
 				if (promotiontype != null)
 				promotion.setPROMOTIONTYPE_ID(jsonObj.getLong("promotiontype_ID"));
 			}
