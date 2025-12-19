@@ -357,52 +357,80 @@ public class promotionProductController<promotionproduct> {
 		if (message != null) {
 			rtnAPIResponse = apiRequestLog.apiRequestErrorLog(apiRequest, "promotionproduct", message).toString();
 		} else  {
-			if (promotionproduct != null && isWithDetail == true) {
-
-				CompletableFuture<JSONObject> promotionFuture = CompletableFuture.supplyAsync(() -> {
-					if (promotionproduct.getPROMOTION_ID() == null) {
-						return new JSONObject();
-					}
-
-					try {
-						return new JSONObject(ServiceCall.GET("promotion/"+promotionproduct.getPROMOTION_ID(), apiRequest.getString("access_TOKEN"), true));
-					} catch (JSONException | JsonProcessingException | ParseException e) {
-						e.printStackTrace();
-						return new JSONObject();
-					}
-				});
-
-				CompletableFuture<JSONObject> productFuture = CompletableFuture.supplyAsync(() -> {
-					if (promotionproduct.getPRODUCT_ID() == null) {
-						return new JSONObject();
-					}
-
-					try {
-						return new JSONObject(ServiceCall.GET("product/"+promotionproduct.getPRODUCT_ID(), apiRequest.getString("access_TOKEN"), true));
-					} catch (JSONException | JsonProcessingException | ParseException e) {
-						e.printStackTrace();
-						return new JSONObject();
-					}
-				});
-
-				// Wait until all futures complete
-				CompletableFuture<Void> allDone =
-						CompletableFuture.allOf(promotionFuture, productFuture);
-
-				// Block until all are done
-				allDone.join();
-
-				promotionproduct.setPROMOTION_DETAIL(promotionFuture.get().toString());
-				promotionproduct.setPRODUCT_DETAIL(productFuture.get().toString());
-
-				rtnAPIResponse = mapper.writeValueAsString(promotionproduct);
-				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
-
-			}  if (promotionproducts != null && isWithDetail == true) {
+			if (isWithDetail == true) {
+				if (promotionproduct != null)
+					promotionproducts.add(promotionproduct);
+	
 				if (promotionproducts.size()>0) {
+					List<Integer> promotionList = new ArrayList<Integer>();
+					List<Integer> productList = new ArrayList<Integer>();
+
+					for (int i=0; i<promotionproducts.size(); i++) {
+						if (promotionproducts.get(i).getPROMOTION_ID() != null) {
+							promotionList.add(Integer.parseInt(promotionproducts.get(i).getPROMOTION_ID().toString()));
+						}
+						if (promotionproducts.get(i).getPRODUCT_ID() != null) {
+							productList.add(Integer.parseInt(promotionproducts.get(i).getPRODUCT_ID().toString()));
+						}
+					}
+
+					CompletableFuture<JSONArray> promotionFuture = CompletableFuture.supplyAsync(() -> {
+						if (promotionList.size() <= 0) {
+							return new JSONArray();
+						}
+
+						try {
+							return new JSONArray(ServiceCall.POST("promotion/ids", "{promotions: "+promotionList+"}", apiRequest.getString("access_TOKEN"), true));
+						} catch (JSONException | JsonProcessingException | ParseException e) {
+							e.printStackTrace();
+							return new JSONArray();
+						}
+					});
+
+					CompletableFuture<JSONArray> productFuture = CompletableFuture.supplyAsync(() -> {
+						if (productList.size() <= 0) {
+							return new JSONArray();
+						}
+
+						try {
+							return new JSONArray(ServiceCall.POST("product/ids", "{products: "+productList+"}", apiRequest.getString("access_TOKEN"), true));
+						} catch (JSONException | JsonProcessingException | ParseException e) {
+							e.printStackTrace();
+							return new JSONArray();
+						}
+					});
+
+					// Wait until all futures complete
+					CompletableFuture<Void> allDone =
+							CompletableFuture.allOf(promotionFuture, productFuture);
+
+					// Block until all are done
+					allDone.join();
+
+					JSONArray personObject = promotionFuture.get();
+					JSONArray companyObject = productFuture.get();
+
+					for (int i=0; i<promotionproducts.size(); i++) {
+						for (int j=0; j<personObject.length(); j++) {
+							JSONObject person = personObject.getJSONObject(j);
+							if (promotionproducts.get(i).getPROMOTION_ID() != null && promotionproducts.get(i).getPROMOTION_ID() == person.getLong("person_ID") ) {
+								promotionproducts.get(i).setPROMOTION_DETAIL(person.toString());
+							}
+						}
+						for (int j=0; j<companyObject.length(); j++) {
+							JSONObject company = companyObject.getJSONObject(j);
+							if (promotionproducts.get(i).getPRODUCT_ID() != null && promotionproducts.get(i).getPRODUCT_ID() == company.getLong("company_ID") ) {
+								promotionproducts.get(i).setPRODUCT_DETAIL(company.toString());
+							}
+						}
+					}
 				}
 
-				rtnAPIResponse = mapper.writeValueAsString(promotionproducts);
+				if (promotionproduct != null)
+					rtnAPIResponse = mapper.writeValueAsString(promotionproducts.get(0));
+				else
+					rtnAPIResponse = mapper.writeValueAsString(promotionproducts);
+
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (promotionproduct != null && isWithDetail == false) {
