@@ -25,13 +25,11 @@ public class PromotionProduct {
 	@Transient
 	private String PROMOTION_DETAIL;
 
-
 	@Column(name ="PRODUCT_ID")
 	private Long PRODUCT_ID;
 
 	@Transient
 	private String PRODUCT_DETAIL;
-
 
 	@Column(name ="PROMOTIONPRODUCT_PRICE")
 	private Double PROMOTIONPRODUCT_PRICE;
@@ -63,41 +61,33 @@ public class PromotionProduct {
 	@Column(name ="MODIFIED_WORKSTATION")
 	private String MODIFIED_WORKSTATION;
 
-
 	public long getPROMOTIONPRODUCT_ID() {
 		return PROMOTIONPRODUCT_ID;
 	}
-
 
 	public void setPROMOTIONPRODUCT_ID(long pROMOTIONPRODUCT_ID) {
 		PROMOTIONPRODUCT_ID = pROMOTIONPRODUCT_ID;
 	}
 
-
 	public Long getPROMOTION_ID() {
 		return PROMOTION_ID;
 	}
-
 
 	public void setPROMOTION_ID(Long pROMOTION_ID) {
 		PROMOTION_ID = pROMOTION_ID;
 	}
 
-
 	public String getPROMOTION_DETAIL() {
 		return PROMOTION_DETAIL;
 	}
-
 
 	public void setPROMOTION_DETAIL(String pROMOTION_DETAIL) {
 		PROMOTION_DETAIL = pROMOTION_DETAIL;
 	}
 
-
 	public Long getPRODUCT_ID() {
 		return PRODUCT_ID;
 	}
-
 
 	public void setPRODUCT_ID(Long pRODUCT_ID) {
 		PRODUCT_ID = pRODUCT_ID;
@@ -108,78 +98,63 @@ public class PromotionProduct {
 		return PRODUCT_DETAIL;
 	}
 
-
 	public void setPRODUCT_DETAIL(String pRODUCT_DETAIL) {
 		PRODUCT_DETAIL = pRODUCT_DETAIL;
 	}
-
 
 	public Double getPROMOTIONPRODUCT_PRICE() {
 		return PROMOTIONPRODUCT_PRICE;
 	}
 
-
 	public void setPROMOTIONPRODUCT_PRICE(Double pROMOTIONPRODUCT_PRICE) {
 		PROMOTIONPRODUCT_PRICE = pROMOTIONPRODUCT_PRICE;
 	}
-
 
 	public Double getQUANTITY_REQUIRED() {
 		return QUANTITY_REQUIRED;
 	}
 
-
 	public void setQUANTITY_REQUIRED(Double qUANTITY_REQUIRED) {
 		QUANTITY_REQUIRED = qUANTITY_REQUIRED;
 	}
-
 
 	public Double getQUANTITY_BONUS() {
 		return QUANTITY_BONUS;
 	}
 
-
 	public void setQUANTITY_BONUS(Double qUANTITY_BONUS) {
 		QUANTITY_BONUS = qUANTITY_BONUS;
 	}
-
 
 	public Long getMAXPURCHASE_LIMIT() {
 		return MAXPURCHASE_LIMIT;
 	}
 
-
 	public void setMAXPURCHASE_LIMIT(Long mAXPURCHASE_LIMIT) {
 		MAXPURCHASE_LIMIT = mAXPURCHASE_LIMIT;
 	}
-
 
 	public String getPROMOTIONPRODUCT_NOTES() {
 		return PROMOTIONPRODUCT_NOTES;
 	}
 
-
 	public void setPROMOTIONPRODUCT_NOTES(String pROMOTIONPRODUCT_NOTES) {
 		PROMOTIONPRODUCT_NOTES = pROMOTIONPRODUCT_NOTES;
 	}
-
 
 	public String getISACTIVE() {
 		return ISACTIVE;
 	}
 
-
 	public void setISACTIVE(String iSACTIVE) {
 		ISACTIVE = iSACTIVE;
 	}
-
 
 	@JsonIgnore
 	public String getMODIFIED_BY() {
 		return MODIFIED_BY;
 	}
 
-	
 	public void setMODIFIED_BY(String mODIFIED_BY) {
 		MODIFIED_BY = mODIFIED_BY;
 	}
@@ -201,6 +176,5 @@ public class PromotionProduct {
 	public void setMODIFIED_WORKSTATION(String mODIFIED_WORKSTATION) {
 		MODIFIED_WORKSTATION = mODIFIED_WORKSTATION;
 	}
-
 
 	}
