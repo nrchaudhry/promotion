@@ -372,41 +372,11 @@ public class promotionController {
 		if (message != null) {
 			rtnAPIResponse = apiRequestLog.apiRequestErrorLog(apiRequest, "promotion", message).toString();
 		} else {
-			if (promotion != null && isWithDetail == true) {
-				List<Integer> lookupList = new ArrayList<Integer>();
-				if (promotion.getPROMOTIONTYPE_ID() != null) {
-					lookupList.add(Integer.parseInt(promotion.getPROMOTIONTYPE_ID().toString()));
-
-					CompletableFuture<JSONArray> lookupFuture = CompletableFuture.supplyAsync(() -> {
-						try {
-							return new JSONArray(ServiceCall.POST("lookup/ids", "{lookups: "+lookupList+"}", apiRequest.getString("access_TOKEN"), true));
-						} catch (JSONException | JsonProcessingException | ParseException e) {
-							e.printStackTrace();
-							return new JSONArray();
-						}
-					});
-
-					// Wait until all futures complete
-					CompletableFuture<Void> allDone =
-							CompletableFuture.allOf(lookupFuture);
-
-					// Block until all are done
-					allDone.join();
-
-					JSONArray lookupObject = lookupFuture.get();
-
-					for (int j=0; j<lookupObject.length(); j++) {
-						JSONObject lookup = lookupObject.getJSONObject(j);
-						if (promotion.getPROMOTIONTYPE_ID() != null && promotion.getPROMOTIONTYPE_ID() == lookup.getLong("id") ) {
-							promotion.setPROMOTIONTYPE_DETAIL(lookup.toString());
-						}
-					}
+			if ((promotions != null || promotion != null) && isWithDetail == true) {
+				if (promotion != null) {
+					promotions = new ArrayList<Promotion>();
+					promotions.add(promotion);
 				}
-			
-				rtnAPIResponse = mapper.writeValueAsString(promotion);
-				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
-
-			} else if (promotions != null && isWithDetail== true) {
 				
 				if (promotions.size()>0) {
 					List<Integer> lookupList = new ArrayList<Integer>();
@@ -442,7 +412,12 @@ public class promotionController {
 			        	}
 			        }
 				}
-				rtnAPIResponse = mapper.writeValueAsString(promotions);
+				
+				if (promotion != null)
+					rtnAPIResponse = mapper.writeValueAsString(promotions.get(0));
+				else
+					rtnAPIResponse = mapper.writeValueAsString(promotions);
+				
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (promotions != null && isWithDetail== false) {
