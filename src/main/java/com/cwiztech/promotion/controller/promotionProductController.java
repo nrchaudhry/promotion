@@ -357,10 +357,11 @@ public class promotionProductController<promotionproduct> {
 		if (message != null) {
 			rtnAPIResponse = apiRequestLog.apiRequestErrorLog(apiRequest, "promotionproduct", message).toString();
 		} else  {
-			if (isWithDetail == true) {
-				if (promotionproduct != null)
+			if ((promotionproducts != null || promotionproduct != null) && isWithDetail == true) {
+				if (promotionproduct != null) {
+					promotionproducts = new ArrayList<PromotionProduct>();
 					promotionproducts.add(promotionproduct);
-	
+				}
 				if (promotionproducts.size()>0) {
 					List<Integer> promotionList = new ArrayList<Integer>();
 					List<Integer> productList = new ArrayList<Integer>();
@@ -407,20 +408,20 @@ public class promotionProductController<promotionproduct> {
 					// Block until all are done
 					allDone.join();
 
-					JSONArray personObject = promotionFuture.get();
-					JSONArray companyObject = productFuture.get();
+					JSONArray  promotionObject = promotionFuture.get();
+					JSONArray productObject = productFuture.get();
 
 					for (int i=0; i<promotionproducts.size(); i++) {
-						for (int j=0; j<personObject.length(); j++) {
-							JSONObject person = personObject.getJSONObject(j);
-							if (promotionproducts.get(i).getPROMOTION_ID() != null && promotionproducts.get(i).getPROMOTION_ID() == person.getLong("person_ID") ) {
-								promotionproducts.get(i).setPROMOTION_DETAIL(person.toString());
+						for (int j=0; j<promotionObject.length(); j++) {
+							JSONObject promotion = promotionObject.getJSONObject(j);
+							if (promotionproducts.get(i).getPROMOTION_ID() != null && promotionproducts.get(i).getPROMOTION_ID() == promotion.getLong("PROMOTION_ID") ) {
+								promotionproducts.get(i).setPROMOTION_DETAIL(promotion.toString());
 							}
 						}
-						for (int j=0; j<companyObject.length(); j++) {
-							JSONObject company = companyObject.getJSONObject(j);
-							if (promotionproducts.get(i).getPRODUCT_ID() != null && promotionproducts.get(i).getPRODUCT_ID() == company.getLong("company_ID") ) {
-								promotionproducts.get(i).setPRODUCT_DETAIL(company.toString());
+						for (int j=0; j<productObject.length(); j++) {
+							JSONObject product = productObject.getJSONObject(j);
+							if (promotionproducts.get(i).getPRODUCT_ID() != null && promotionproducts.get(i).getPRODUCT_ID() == product.getLong("PRODUCT_ID") ) {
+								promotionproducts.get(i).setPRODUCT_DETAIL(product.toString());
 							}
 						}
 					}
