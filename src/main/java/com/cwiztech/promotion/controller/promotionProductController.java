@@ -407,20 +407,20 @@ public class promotionProductController<promotionproduct> {
 					// Block until all are done
 					allDone.join();
 
-					JSONArray personObject = promotionFuture.get();
-					JSONArray companyObject = productFuture.get();
+					JSONArray promotionObject = promotionFuture.get();
+					JSONArray productObject = productFuture.get();
 
 					for (int i=0; i<promotionproducts.size(); i++) {
-						for (int j=0; j<personObject.length(); j++) {
-							JSONObject person = personObject.getJSONObject(j);
-							if (promotionproducts.get(i).getPROMOTION_ID() != null && promotionproducts.get(i).getPROMOTION_ID() == person.getLong("person_ID") ) {
-								promotionproducts.get(i).setPROMOTION_DETAIL(person.toString());
+						for (int j=0; j<promotionObject.length(); j++) {
+							JSONObject promotion = promotionObject.getJSONObject(j);
+							if (promotionproducts.get(i).getPROMOTION_ID() != null && promotionproducts.get(i).getPROMOTION_ID() == promotion.getLong("person_ID") ) {
+								promotionproducts.get(i).setPROMOTION_DETAIL(promotion.toString());
 							}
 						}
-						for (int j=0; j<companyObject.length(); j++) {
-							JSONObject company = companyObject.getJSONObject(j);
-							if (promotionproducts.get(i).getPRODUCT_ID() != null && promotionproducts.get(i).getPRODUCT_ID() == company.getLong("company_ID") ) {
-								promotionproducts.get(i).setPRODUCT_DETAIL(company.toString());
+						for (int j=0; j<productObject.length(); j++) {
+							JSONObject product = productObject.getJSONObject(j);
+							if (promotionproducts.get(i).getPRODUCT_ID() != null && promotionproducts.get(i).getPRODUCT_ID() == product.getLong("company_ID") ) {
+								promotionproducts.get(i).setPRODUCT_DETAIL(product.toString());
 							}
 						}
 					}

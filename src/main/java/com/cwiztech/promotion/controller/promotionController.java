@@ -184,7 +184,7 @@ public class promotionController {
 			} else if (id == 0) {
 				JSONObject promotiontype = new JSONObject(ServiceCall.POST("lookup/bycode", "{entityname: 'PROMOTIONTYPE', code: 'DISCOUNT'}", apiRequest.getString("access_TOKEN"), true));
 				if (promotiontype != null)
-				promotion.setPROMOTIONTYPE_ID(jsonObj.getLong("promotiontype_ID"));
+				promotion.setPROMOTIONTYPE_ID(promotiontype.getLong("id"));
 			}
 
 			if (jsonObj.has("discount_PERCENTAGE") && !jsonObj.isNull("discount_PERCENTAGE"))
@@ -409,7 +409,7 @@ public class promotionController {
 			        		if (promotions.get(i).getPROMOTIONTYPE_ID() != null && promotions.get(i).getPROMOTIONTYPE_ID() == lookups.getJSONObject(j).getLong("id") ) {
 								promotions.get(i).setPROMOTIONTYPE_DETAIL(lookups.getJSONObject(j).toString());
 							}
-			        	}
+			        		}
 			        }
 				}
 				
@@ -424,7 +424,7 @@ public class promotionController {
 				rtnAPIResponse = mapper.writeValueAsString(promotions);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (promotion != null && !isWithDetail == false) {
+			} else if (promotion != null && isWithDetail == false) {
 				rtnAPIResponse = mapper.writeValueAsString(promotion);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
