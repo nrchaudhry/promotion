@@ -98,7 +98,7 @@ public class promotionController {
 
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
-
+                     
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity insert(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
