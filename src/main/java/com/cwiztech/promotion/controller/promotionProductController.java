@@ -408,31 +408,22 @@ public class promotionProductController<promotionproduct> {
 					// Block until all are done
 					allDone.join();
 
-<<<<<<< HEAD
+
 					JSONArray promotionObject = promotionFuture.get();
-=======
-					JSONArray  promotionObject = promotionFuture.get();
->>>>>>> 8d5794e9a1332f4e1e2153ddac2fb45b7f6a1735
 					JSONArray productObject = productFuture.get();
 
 					for (int i=0; i<promotionproducts.size(); i++) {
 						for (int j=0; j<promotionObject.length(); j++) {
 							JSONObject promotion = promotionObject.getJSONObject(j);
-<<<<<<< HEAD
-							if (promotionproducts.get(i).getPROMOTION_ID() != null && promotionproducts.get(i).getPROMOTION_ID() == promotion.getLong("person_ID") ) {
-=======
 							if (promotionproducts.get(i).getPROMOTION_ID() != null && promotionproducts.get(i).getPROMOTION_ID() == promotion.getLong("PROMOTION_ID") ) {
->>>>>>> 8d5794e9a1332f4e1e2153ddac2fb45b7f6a1735
+
 								promotionproducts.get(i).setPROMOTION_DETAIL(promotion.toString());
 							}
 						}
 						for (int j=0; j<productObject.length(); j++) {
 							JSONObject product = productObject.getJSONObject(j);
-<<<<<<< HEAD
-							if (promotionproducts.get(i).getPRODUCT_ID() != null && promotionproducts.get(i).getPRODUCT_ID() == product.getLong("company_ID") ) {
-=======
 							if (promotionproducts.get(i).getPRODUCT_ID() != null && promotionproducts.get(i).getPRODUCT_ID() == product.getLong("PRODUCT_ID") ) {
->>>>>>> 8d5794e9a1332f4e1e2153ddac2fb45b7f6a1735
+
 								promotionproducts.get(i).setPRODUCT_DETAIL(product.toString());
 							}
 						}
