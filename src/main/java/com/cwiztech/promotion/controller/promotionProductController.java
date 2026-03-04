@@ -443,7 +443,8 @@ public class promotionProductController<promotionproduct> {
 					// Block until all are done
 					allDone.join();
 
-					JSONArray  promotionObject = promotionFuture.get();
+
+					JSONArray promotionObject = promotionFuture.get();
 					JSONArray productObject = productFuture.get();
 					JSONArray productcategoryObject = productcategoryFuture.get();
 
@@ -451,12 +452,14 @@ public class promotionProductController<promotionproduct> {
 						for (int j=0; j<promotionObject.length(); j++) {
 							JSONObject promotion = promotionObject.getJSONObject(j);
 							if (promotionproducts.get(i).getPROMOTION_ID() != null && promotionproducts.get(i).getPROMOTION_ID() == promotion.getLong("PROMOTION_ID") ) {
+
 								promotionproducts.get(i).setPROMOTION_DETAIL(promotion.toString());
 							}
 						}
 						for (int j=0; j<productObject.length(); j++) {
 							JSONObject product = productObject.getJSONObject(j);
 							if (promotionproducts.get(i).getPRODUCT_ID() != null && promotionproducts.get(i).getPRODUCT_ID() == product.getLong("PRODUCT_ID") ) {
+
 								promotionproducts.get(i).setPRODUCT_DETAIL(product.toString());
 							}
 						}

@@ -10,7 +10,7 @@ import com.cwiztech.promotion.model.PromotionProduct;
 public interface promotionProductRepository extends JpaRepository<PromotionProduct, Long> {
 	@Query(value = "select * from tblpromotionproduct where ISACTIVE='Y'", nativeQuery = true)
 	public List<PromotionProduct> findActive();
-
+ 
 	@Query(value = "select * from tblpromotionproduct "
 			+ "where PROMOTIONPRODUCT_ID in (:ids) "
 			+ "", nativeQuery = true)
