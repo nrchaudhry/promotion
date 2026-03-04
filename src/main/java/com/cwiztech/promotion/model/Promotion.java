@@ -1,5 +1,7 @@
 package com.cwiztech.promotion.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,25 +26,35 @@ public class Promotion {
 	@Column(name = "PROMOTION_DESCRIPTION")
 	private String PROMOTION_DESCRIPTION;
 	
-	
 	@Column(name = "PROMOTIONTYPE_ID")
 	private Long PROMOTIONTYPE_ID;
 	
 	@Transient
 	private String PROMOTIONTYPE_DETAIL;
 	
+	@Column(name = "DISCOUNTTYPE_ID")
+	private Long DISCOUNTTYPE_ID;
 	
-	@Column(name = "DISCOUNT_PERCENTAGE")
-	private Long DISCOUNT_PERCENTAGE;
+	@Transient
+	private String DISCOUNTTYPE_DETAIL;
 	
+	@Column(name = "DISCOUNT_VALUE")
+	private BigDecimal DISCOUNT_VALUE;
+	
+	@Column(name = "MINORDER_AMOUNT")
+	private BigDecimal MINORDER_AMOUNT;
+	
+	@Column(name = "MAXORDER_AMOUNT")
+	private BigDecimal MAXORDER_AMOUNT;
 	
 	@Column(name = "PROMOTIONSTART_DATE")
 	private String PROMOTIONSTART_DATE;
 	
-	
 	@Column(name = "PROMOTIONEND_DATE")
 	private String PROMOTIONEND_DATE;
 	
+	@Column(name = "COUPON_CODE")
+	private String COUPON_CODE;
 	
 	@Column(name = "ISACTIVE")
 	private String ISACTIVE;
@@ -59,7 +71,6 @@ public class Promotion {
 	@Column(name = "MODIFIED_WORKSTATION")
 	private String MODIFIED_WORKSTATION;
 
-	
 	public long getPROMOTION_ID() {
 		return PROMOTION_ID;
 	}
@@ -100,12 +111,44 @@ public class Promotion {
 		PROMOTIONTYPE_DETAIL = pROMOTIONTYPE_DETAIL;
 	}
 
-	public Long getDISCOUNT_PERCENTAGE() {
-		return DISCOUNT_PERCENTAGE;
+	public Long getDISCOUNTTYPE_ID() {
+		return DISCOUNTTYPE_ID;
 	}
 
-	public void setDISCOUNT_PERCENTAGE(Long dISCOUNT_PERCENTAGE) {
-		DISCOUNT_PERCENTAGE = dISCOUNT_PERCENTAGE;
+	public void setDISCOUNTTYPE_ID(Long dISCOUNTTYPE_ID) {
+		DISCOUNTTYPE_ID = dISCOUNTTYPE_ID;
+	}
+
+	public String getDISCOUNTTYPE_DETAIL() {
+		return DISCOUNTTYPE_DETAIL;
+	}
+
+	public void setDISCOUNTTYPE_DETAIL(String dISCOUNTTYPE_DETAIL) {
+		DISCOUNTTYPE_DETAIL = dISCOUNTTYPE_DETAIL;
+	}
+
+	public BigDecimal getDISCOUNT_VALUE() {
+		return DISCOUNT_VALUE;
+	}
+
+	public void setDISCOUNT_VALUE(BigDecimal dISCOUNT_VALUE) {
+		DISCOUNT_VALUE = dISCOUNT_VALUE;
+	}
+
+	public BigDecimal getMINORDER_AMOUNT() {
+		return MINORDER_AMOUNT;
+	}
+
+	public void setMINORDER_AMOUNT(BigDecimal mINORDER_AMOUNT) {
+		MINORDER_AMOUNT = mINORDER_AMOUNT;
+	}
+
+	public BigDecimal getMAXORDER_AMOUNT() {
+		return MAXORDER_AMOUNT;
+	}
+
+	public void setMAXORDER_AMOUNT(BigDecimal mAXORDER_AMOUNT) {
+		MAXORDER_AMOUNT = mAXORDER_AMOUNT;
 	}
 
 	public String getPROMOTIONSTART_DATE() {
@@ -124,6 +167,14 @@ public class Promotion {
 		PROMOTIONEND_DATE = pROMOTIONEND_DATE;
 	}
 
+	public String getCOUPON_CODE() {
+		return COUPON_CODE;
+	}
+
+	public void setCOUPON_CODE(String cOUPON_CODE) {
+		COUPON_CODE = cOUPON_CODE;
+	}
+
 	public String getISACTIVE() {
 		return ISACTIVE;
 	}
@@ -132,30 +183,31 @@ public class Promotion {
 		ISACTIVE = iSACTIVE;
 	}
 
-	@JsonIgnore
 	public Long getMODIFIED_BY() {
 		return MODIFIED_BY;
 	}
-
+	
+	@JsonIgnore
 	public void setMODIFIED_BY(Long mODIFIED_BY) {
 		MODIFIED_BY = mODIFIED_BY;
 	}
 
-	@JsonIgnore
 	public String getMODIFIED_WHEN() {
 		return MODIFIED_WHEN;
 	}
-
+	
+	@JsonIgnore
 	public void setMODIFIED_WHEN(String mODIFIED_WHEN) {
 		MODIFIED_WHEN = mODIFIED_WHEN;
 	}
 
-	@JsonIgnore
 	public String getMODIFIED_WORKSTATION() {
 		return MODIFIED_WORKSTATION;
 	}
-
+	
+	@JsonIgnore
 	public void setMODIFIED_WORKSTATION(String mODIFIED_WORKSTATION) {
 		MODIFIED_WORKSTATION = mODIFIED_WORKSTATION;
 	}
+
 }

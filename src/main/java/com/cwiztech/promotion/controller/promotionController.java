@@ -1,6 +1,7 @@
 package com.cwiztech.promotion.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -186,15 +187,28 @@ public class promotionController {
 				if (promotiontype != null)
 				promotion.setPROMOTIONTYPE_ID(promotiontype.getLong("id"));
 			}
+			
+			if (jsonObj.has("discounttype_ID") && !jsonObj.isNull("discounttype_ID"))
+				promotion.setDISCOUNTTYPE_ID(jsonObj.getLong("discounttype_ID"));
 
-			if (jsonObj.has("discount_PERCENTAGE") && !jsonObj.isNull("discount_PERCENTAGE"))
-				promotion.setDISCOUNT_PERCENTAGE(jsonObj.getLong("discount_PERCENTAGE"));
+			if (jsonObj.has("discount_VALUE") && !jsonObj.isNull("discount_VALUE"))
+				promotion.setDISCOUNT_VALUE(BigDecimal.valueOf(jsonObj.getLong("discount_VALUE")));
+			
+			if (jsonObj.has("minorder_AMOUNT") && !jsonObj.isNull("minorder_AMOUNT"))
+				promotion.setMINORDER_AMOUNT(BigDecimal.valueOf(jsonObj.getLong("minorder_AMOUNT")));
+			
+			if (jsonObj.has("maxorder_AMOUNT") && !jsonObj.isNull("maxorder_AMOUNT"))
+				promotion.setMAXORDER_AMOUNT(BigDecimal.valueOf(jsonObj.getLong("maxorder_AMOUNT")));
 
 			if (jsonObj.has("promotionstart_DATE") && !jsonObj.isNull("promotionstart_DATE"))
 				promotion.setPROMOTIONSTART_DATE(jsonObj.getString("promotionstart_DATE"));
 
 			if (jsonObj.has("promotionend_DATE") && !jsonObj.isNull("promotionend_DATE"))
 				promotion.setPROMOTIONEND_DATE(jsonObj.getString("promotionend_DATE"));
+			
+			if (jsonObj.has("coupon_CODE") && !jsonObj.isNull("coupon_CODE"))
+				promotion.setCOUPON_CODE(jsonObj.getString("coupon_CODE"));
+			
 
 			if (id == 0)
 				promotion.setISACTIVE("Y");
@@ -292,9 +306,10 @@ public class promotionController {
 
 		String promotionstart_DATEFROM="", promotionstart_DATETO="", promotionend_DATEFROM="", promotionend_DATETO = "";
 
-		long promotiontype_ID=0, promotionstartdate=0, promotionenddate=0;
-		List<Integer> promotiontype_IDS = new ArrayList<Integer>(); 
+		long promotiontype_ID=0, promotionstartdate=0, promotionenddate=0, discounttype_ID= 0;
+		List<Integer> discounttype_IDS = new ArrayList<Integer>(); 
 
+		discounttype_IDS.add((int) 0);
 
 		boolean isWithDetail = true;
 		if (jsonObj.has("iswithdetail") && !jsonObj.isNull("iswithdetail")) {
@@ -340,23 +355,33 @@ public class promotionController {
 
 		if (jsonObj.has("promotiontype_ID") && !jsonObj.isNull("promotiontype_ID") && jsonObj.getLong("promotiontype_ID") != 0) {
 			promotiontype_ID = jsonObj.getLong("promotiontype_ID");
-			promotiontype_IDS.add((int) promotiontype_ID);
-		} else if (jsonObj.has("promotiontype") && !jsonObj.isNull("promotiontype") && jsonObj.getLong("promotiontype") != 0) {
+		} 	else if (jsonObj.has("promotiontype_CODE") && !jsonObj.isNull("promotiontype_CODE")) {
+			JSONObject promotiontype = new JSONObject(ServiceCall.POST("lookup/bycode", "{entityname: 'PAYMENTTYPE', code: "+jsonObj.getString("promotiontype_CODE")+"}", apiRequest.getString("access_TOKEN"), true));
+			if (promotiontype != null)
+				promotiontype_ID = promotiontype.getLong("id");
+		}
+		
+		if (jsonObj.has("discounttype_ID") && !jsonObj.isNull("discounttype_ID") && jsonObj.getLong("discounttype_ID") != 0) {
+			discounttype_ID = jsonObj.getLong("discounttype_ID");
+			discounttype_IDS.add((int) discounttype_ID);
+
+		}  else if (jsonObj.has("discounttype") && !jsonObj.isNull("discounttype") && jsonObj.getLong("discounttype") != 0) {
 			if (active == true) {
-				searchObject = new JSONArray(ServiceCall.POST("promotiontype/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
+				searchObject = new JSONArray(ServiceCall.POST("discounttype/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
 			} else {
-				searchObject = new JSONArray(ServiceCall.POST("promotiontype/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
+				searchObject = new JSONArray(ServiceCall.POST("discounttype/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
 			}
 
-			promotiontype_ID = searchObject.length();
+			discounttype_ID = searchObject.length();
 			for (int i=0; i<searchObject.length(); i++) {
-				promotiontype_IDS.add((int) searchObject.getJSONObject(i).getLong("promotiontype_ID"));
+				discounttype_IDS.add((int) searchObject.getJSONObject(i).getLong("discounttype_ID"));
 			}
 		}
-		if (promotiontype_ID != 0) {
+		
+		if (promotiontype_ID != 0 || discounttype_ID != 0 ) {
 			promotions = ((active == true)
-					? promotionrepository.findByAdvancedSearch(promotiontype_ID, promotionstartdate, promotionstart_DATEFROM, promotionstart_DATETO, promotionenddate, promotionend_DATEFROM, promotionend_DATETO)
-							: promotionrepository.findAllByAdvancedSearch(promotiontype_ID, promotionstartdate, promotionstart_DATEFROM, promotionstart_DATETO, promotionenddate, promotionend_DATEFROM, promotionend_DATETO));
+					? promotionrepository.findByAdvancedSearch(promotiontype_ID, discounttype_ID, discounttype_IDS,promotionstartdate,promotionstart_DATEFROM,promotionstart_DATETO, promotionenddate, promotionend_DATEFROM, promotionend_DATETO)
+							: promotionrepository.findAllByAdvancedSearch(promotiontype_ID, discounttype_ID, discounttype_IDS, promotionstartdate, promotionstart_DATEFROM, promotionstart_DATETO, promotionenddate, promotionend_DATEFROM, promotionend_DATETO));
 		}
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, isWithDetail).toString(), HttpStatus.OK);
 	}
@@ -379,13 +404,31 @@ public class promotionController {
 				}
 				
 				if (promotions.size()>0) {
+					List<Integer> discounttypeList = new ArrayList<Integer>();
 					List<Integer> lookupList = new ArrayList<Integer>();
 					
 					for (int i=0; i<promotions.size(); i++) {
+						if (promotions.get(i).getDISCOUNTTYPE_ID() != null) {
+							discounttypeList.add(Integer.parseInt(promotions.get(i).getDISCOUNTTYPE_ID().toString()));
+						}
 						if (promotions.get(i).getPROMOTIONTYPE_ID() != null) {
 							lookupList.add(Integer.parseInt(promotions.get(i).getPROMOTIONTYPE_ID().toString()));
 						}
 					}
+					
+					CompletableFuture<JSONArray> discounttypeFuture = CompletableFuture.supplyAsync(() -> {
+						if (discounttypeList.size() <= 0) {
+							return new JSONArray();
+						}
+
+						try {
+							return new JSONArray(ServiceCall.POST("discounttype/ids", "{discounttypes: "+discounttypeList+"}", apiRequest.getString("access_TOKEN"), true));
+						} catch (JSONException | JsonProcessingException | ParseException e) {
+							e.printStackTrace();
+							return new JSONArray();
+						}
+					});
+
 					CompletableFuture<JSONArray> lookupFuture = CompletableFuture.supplyAsync(() -> {
 						try {
 							return new JSONArray(ServiceCall.POST("lookup/ids", "{lookups: "+lookupList+"}", apiRequest.getString("access_TOKEN"), true));
@@ -397,14 +440,23 @@ public class promotionController {
 					
 					// Wait until all futures complete
 			        CompletableFuture<Void> allDone =
-			                CompletableFuture.allOf(lookupFuture);
+			                CompletableFuture.allOf(discounttypeFuture,lookupFuture);
 
 			        // Block until all are done
 			        allDone.join();
 			        
+			        JSONArray discounttypeObject = discounttypeFuture.get();
 			        JSONArray lookups = lookupFuture.get();
 			        
 			        for (int i=0; i<promotions.size(); i++) {
+			        	for (int j=0; j<discounttypeObject.length(); j++) {
+							JSONObject discounttype = discounttypeObject.getJSONObject(j);
+							if (promotions.get(i).getDISCOUNTTYPE_ID() != null && promotions.get(i).getDISCOUNTTYPE_ID() == discounttype.getLong("DISCOUNTTYPE_ID") ) {
+
+								promotions.get(i).setDISCOUNTTYPE_DETAIL(discounttype.toString());
+							}
+						}
+			        	
 			        	for (int j=0; j<lookups.length(); j++) {
 			        		if (promotions.get(i).getPROMOTIONTYPE_ID() != null && promotions.get(i).getPROMOTIONTYPE_ID() == lookups.getJSONObject(j).getLong("id") ) {
 								promotions.get(i).setPROMOTIONTYPE_DETAIL(lookups.getJSONObject(j).toString());
