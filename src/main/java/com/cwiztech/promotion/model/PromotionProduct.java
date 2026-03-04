@@ -31,6 +31,13 @@ public class PromotionProduct {
 	@Transient
 	private String PRODUCT_DETAIL;
 
+	@Column(name ="PRODUCTCATEGORY_ID")
+	private Long PRODUCTCATEGORY_ID;
+
+	@Transient
+	private String PRODUCTCATEGORY_DETAIL;
+	
+
 	@Column(name ="PROMOTIONPRODUCT_PRICE")
 	private Double PROMOTIONPRODUCT_PRICE;
 
@@ -100,6 +107,22 @@ public class PromotionProduct {
 
 	public void setPRODUCT_DETAIL(String pRODUCT_DETAIL) {
 		PRODUCT_DETAIL = pRODUCT_DETAIL;
+	}
+
+	public Long getPRODUCTCATEGORY_ID() {
+		return PRODUCTCATEGORY_ID;
+	}
+
+	public void setPRODUCTCATEGORY_ID(Long pRODUCTCATEGORY_ID) {
+		PRODUCTCATEGORY_ID = pRODUCTCATEGORY_ID;
+	}
+
+	public String getPRODUCTCATEGORY_DETAIL() {
+		return PRODUCTCATEGORY_DETAIL;
+	}
+
+	public void setPRODUCTCATEGORY_DETAIL(String pRODUCTCATEGORY_DETAIL) {
+		PRODUCTCATEGORY_DETAIL = pRODUCTCATEGORY_DETAIL;
 	}
 
 	public Double getPROMOTIONPRODUCT_PRICE() {

@@ -1,6 +1,7 @@
 package com.cwiztech.promotion.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,7 +26,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cwiztech.promotion.model.PromotionBuyGet;
 import com.cwiztech.promotion.model.PromotionProduct;
+import com.cwiztech.promotion.repository.promotionBuyGetRepository;
 import com.cwiztech.promotion.repository.promotionProductRepository;
 import com.cwiztech.log.apiRequestLog;
 import com.cwiztech.services.ServiceCall;
@@ -36,12 +39,12 @@ import com.google.maps.errors.ApiException;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/promotionproduct")
-public class promotionProductController<promotionproduct> {
-	private static final Logger log = LoggerFactory.getLogger(promotionProductController.class);
+@RequestMapping("/promotionbuyget")
+public class promotionBuyGetController<promotionbutget> {
+	private static final Logger log = LoggerFactory.getLogger(promotionBuyGetController.class);
 
 	@Autowired
-	private promotionProductRepository promotionproductrepository;
+	private promotionBuyGetRepository promotionbuygetrepository;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.GET)
@@ -49,31 +52,31 @@ public class promotionProductController<promotionproduct> {
 		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionproduct", null, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
-		List<PromotionProduct> promotionproducts = promotionproductrepository.findActive();
+		List<PromotionBuyGet> promotionbuygets = promotionbuygetrepository.findActive();
 
-		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
+		return new ResponseEntity(getAPIResponse(promotionbuygets, null, null, null, null, apiRequest, true), HttpStatus.OK);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/all", method = RequestMethod.GET)
 	public ResponseEntity getAll(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionproduct/all", null, null, headToken);
+		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionbuyget/all", null, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
-		List<PromotionProduct> promotionproducts = promotionproductrepository.findAll();
+		List<PromotionBuyGet> promotionbuygets = promotionbuygetrepository.findAll();
 
-		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
+		return new ResponseEntity(getAPIResponse(promotionbuygets, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity getOne(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionproduct/" + id, null, null, headToken);
+		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionbuyget/" + id, null, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
-		PromotionProduct promotionproduct = promotionproductrepository.findOne(id);
+		PromotionBuyGet promotionbuyget = promotionbuygetrepository.findOne(id);
 
-		return new ResponseEntity(getAPIResponse(null, promotionproduct, null, null, null, apiRequest, true), HttpStatus.OK);
+		return new ResponseEntity(getAPIResponse(null, promotionbuyget, null, null, null, apiRequest, true), HttpStatus.OK);
 	}
 	// will give id's in body in form of array and it'll show data of that id's
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -81,30 +84,30 @@ public class promotionProductController<promotionproduct> {
 	public ResponseEntity getByIDs(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
 			throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
 
-		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionproduct/ids", data, null, headToken);
+		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionbuyget/ids", data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.BAD_REQUEST);
 
-		List<Integer> promotionproduct_IDS = new ArrayList<Integer>(); 
+		List<Integer> PROMOTIONBUYGET_IDS = new ArrayList<Integer>(); 
 		JSONObject jsonObj = new JSONObject(data);
-		JSONArray jsonpromotionproducts = jsonObj.getJSONArray("promotionproducts");
-		for (int i=0; i<jsonpromotionproducts.length(); i++) {
-			promotionproduct_IDS.add((Integer) jsonpromotionproducts.get(i));
+		JSONArray jsonpromotionbuygets = jsonObj.getJSONArray("promotionbuygets");
+		for (int i=0; i<jsonpromotionbuygets.length(); i++) {
+			PROMOTIONBUYGET_IDS.add((Integer) jsonpromotionbuygets.get(i));
 		}
 
-		List<PromotionProduct> promotionproducts = new ArrayList<PromotionProduct>();   
-		if (jsonpromotionproducts.length()>0)
+		List<PromotionBuyGet> promotionbuygets = new ArrayList<PromotionBuyGet>();   
+		if (jsonpromotionbuygets.length()>0)
 
-			promotionproducts = promotionproductrepository.findByIDs(promotionproduct_IDS);
+			promotionbuygets = promotionbuygetrepository.findByIDs(PROMOTIONBUYGET_IDS);
 
 
-		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
+		return new ResponseEntity(getAPIResponse(promotionbuygets, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity insert(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
 			throws JSONException, ParseException, InterruptedException, ExecutionException, ApiException, InterruptedException, IOException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionproduct", data, null, headToken);
+		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionbuyget", data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
 		return insertupdateAll(null, new JSONObject(data), apiRequest);
@@ -114,7 +117,7 @@ public class promotionProductController<promotionproduct> {
 	@RequestMapping( method = RequestMethod.PUT)
 	public ResponseEntity updateAll(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
 			throws JSONException, ParseException, InterruptedException, ExecutionException, ApiException, InterruptedException, IOException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("PUT", "/promotionproduct", data, null, headToken);
+		JSONObject apiRequest = AccessToken.checkToken("PUT", "/promotionbuyget", data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
 		return insertupdateAll(new JSONArray(data), null, apiRequest);
@@ -125,89 +128,82 @@ public class promotionProductController<promotionproduct> {
 	public ResponseEntity update(@PathVariable Long id, @RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
 			throws JSONException, ParseException, InterruptedException, ExecutionException, ApiException, InterruptedException, IOException, ExecutionException {
 
-		JSONObject apiRequest = AccessToken.checkToken("PUT", "/promotionproduct/"+id, data, null, headToken);
+		JSONObject apiRequest = AccessToken.checkToken("PUT", "/promotionbuyget/"+id, data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
 		JSONObject jsonObj = new JSONObject(data);
-		jsonObj.put("promotionproduct_ID", id);
+		jsonObj.put("PROMOTIONBUYGET_ID", id);
 
 		return insertupdateAll(null, jsonObj, apiRequest);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ResponseEntity insertupdateAll(JSONArray jsonpromotionproducts, JSONObject jsonpromotionproduct, JSONObject apiRequest) throws JSONException, ParseException, InterruptedException, ExecutionException, ApiException, InterruptedException, IOException, ExecutionException {
+	public ResponseEntity insertupdateAll(JSONArray jsonpromotionbuygets, JSONObject jsonpromotionbuyget, JSONObject apiRequest) throws JSONException, ParseException, InterruptedException, ExecutionException, ApiException, InterruptedException, IOException, ExecutionException {
 		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 
-		List<PromotionProduct> promotionproducts = new ArrayList<PromotionProduct>();
-		if (jsonpromotionproduct!= null) {
-			jsonpromotionproducts = new JSONArray();
-			jsonpromotionproducts.put(jsonpromotionproduct);
+		List<PromotionBuyGet> promotionbuygets = new ArrayList<PromotionBuyGet>();
+		if (jsonpromotionbuyget!= null) {
+			jsonpromotionbuygets = new JSONArray();
+			jsonpromotionbuygets.put(jsonpromotionbuyget);
 		}
 
-		for (int i=0; i<jsonpromotionproduct.length(); i++) {
-			JSONObject jsonObj = jsonpromotionproducts.getJSONObject(i);
-			PromotionProduct promotionproduct = new  PromotionProduct();
+		for (int i=0; i<jsonpromotionbuyget.length(); i++) {
+			JSONObject jsonObj = jsonpromotionbuygets.getJSONObject(i);
+			PromotionBuyGet promotionbuyget = new  PromotionBuyGet();
 			long id=0; 
 
-			if (jsonObj.has("promotionprodcut_ID")) {
-				id = jsonObj.getLong("promotionprodcut_ID");
+			if (jsonObj.has("PROMOTIONBUYGET_ID")) {
+				id = jsonObj.getLong("PROMOTIONBUYGET_ID");
 				if (id!=0) {
-					promotionproduct = promotionproductrepository.findOne(id);
+					promotionbuyget = promotionbuygetrepository.findOne(id);
 				}
 			}
 
 			if (id == 0) {
-				if (!jsonObj.has("promotionprodcut_ID") && jsonObj.isNull("promotionprodcut_ID")) {
-					return new ResponseEntity(getAPIResponse(null, null , null, null, "promotionprodcut_ID are missing", apiRequest, true), HttpStatus.OK);
+				if (!jsonObj.has("PROMOTIONBUYGET_ID") && jsonObj.isNull("PROMOTIONBUYGET_ID")) {
+					return new ResponseEntity(getAPIResponse(null, null , null, null, "PROMOTIONBUYGET_ID are missing", apiRequest, true), HttpStatus.OK);
 				}
 			}
 
 			if (jsonObj.has("promotion_ID") && !jsonObj.isNull("promotion_ID"))
-				promotionproduct.setPROMOTION_ID(jsonObj.getLong("promotion_ID"));
+				promotionbuyget.setPROMOTION_ID(jsonObj.getLong("promotion_ID"));
 
-			if (jsonObj.has("product_ID") && !jsonObj.isNull("product_ID"))
-				promotionproduct.setPRODUCT_ID(jsonObj.getLong("product_ID"));
+			if (jsonObj.has("buyproduct_ID") && !jsonObj.isNull("buyproduct_ID"))
+				promotionbuyget.setBUYPRODUCT_ID(jsonObj.getLong("buyproduct_ID"));
+
+			if (jsonObj.has("buy_QUANTITY") && !jsonObj.isNull("buy_QUANTITY"))
+				promotionbuyget.setBUY_QUANTITY(BigDecimal.valueOf(jsonObj.getDouble("buy_QUANTITY")));
+			else if (id == 0)
+				promotionbuyget.setBUY_QUANTITY(BigDecimal.valueOf(0.0));
+
+			if (jsonObj.has("getproduct_ID") && !jsonObj.isNull("getproduct_ID"))
+				promotionbuyget.setGETPRODUCT_ID(jsonObj.getLong("getproduct_ID"));
 			
-			if (jsonObj.has("PRODUCTCATEGORY_ID") && !jsonObj.isNull("PRODUCTCATEGORY_ID"))
-				promotionproduct.setPRODUCTCATEGORY_ID(jsonObj.getLong("PRODUCTCATEGORY_ID"));
-
-			if (jsonObj.has("promotionproduct_PRICE") && !jsonObj.isNull("promotionproduct_PRICE"))
-				promotionproduct.setPROMOTIONPRODUCT_PRICE(jsonObj.getDouble("promotionproduct_PRICE"));
-
-			if (jsonObj.has("quantity_REQUIRED") && !jsonObj.isNull("quantity_REQUIRED"))
-				promotionproduct.setQUANTITY_REQUIRED(jsonObj.getDouble("quantity_REQUIRED"));
-
-			if (jsonObj.has("quantity_BONUS") && !jsonObj.isNull("quantity_BONUS"))
-				promotionproduct.setQUANTITY_BONUS(jsonObj.getDouble("quantity_BONUS"));
-
-			if (jsonObj.has("maxpurchase_LIMIT") && !jsonObj.isNull("maxpurchase_LIMIT"))
-				promotionproduct.setMAXPURCHASE_LIMIT(jsonObj.getLong("maxpurchase_LIMIT"));
-
-
-			if (jsonObj.has("promotionproduct_NOTES") && !jsonObj.isNull("promotionproduct_NOTES"))
-				promotionproduct.setPROMOTIONPRODUCT_NOTES(jsonObj.getString("promotionproduct_NOTES"));
-
+			if (jsonObj.has("GET_QUANTITY") && !jsonObj.isNull("GET_QUANTITY"))
+				promotionbuyget.setGET_QUANTITY(BigDecimal.valueOf(jsonObj.getDouble("GET_QUANTITY")));
+			else if (id == 0)
+				promotionbuyget.setBUY_QUANTITY(BigDecimal.valueOf(0.0));
 
 			if (id == 0)
-				promotionproduct.setISACTIVE("Y");
+				promotionbuyget.setISACTIVE("Y");
 			else if (jsonObj.has("isactive"))
-				promotionproduct.setISACTIVE(jsonObj.getString("isactive"));
+				promotionbuyget.setISACTIVE(jsonObj.getString("isactive"));
 
-			promotionproduct.setMODIFIED_BY(apiRequest.getString("request_ID"));
-			promotionproduct.setMODIFIED_WORKSTATION(apiRequest.getString("log_WORKSTATION"));
-			promotionproduct.setMODIFIED_WHEN(dateFormat1.format(date));
+			promotionbuyget.setMODIFIED_BY(apiRequest.getString("request_ID"));
+			promotionbuyget.setMODIFIED_WORKSTATION(apiRequest.getString("log_WORKSTATION"));
+			promotionbuyget.setMODIFIED_WHEN(dateFormat1.format(date));
 
-			promotionproduct = promotionproductrepository.saveAndFlush(promotionproduct);
-			promotionproducts.add(promotionproduct);
+			promotionbuyget = promotionbuygetrepository.saveAndFlush(promotionbuyget);
+			promotionbuygets.add(promotionbuyget);
 
 		}
 
 		ResponseEntity responseentity;
-		if (jsonpromotionproduct != null)
-			responseentity = new ResponseEntity(getAPIResponse(null, promotionproducts.get(0), null, null, null, apiRequest, true), HttpStatus.OK);
+		if (jsonpromotionbuyget != null)
+			responseentity = new ResponseEntity(getAPIResponse(null, promotionbuygets.get(0), null, null, null, apiRequest, true), HttpStatus.OK);
 		else
-			responseentity = new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
+			responseentity = new ResponseEntity(getAPIResponse(promotionbuygets, null, null, null, null, apiRequest, true), HttpStatus.OK);
 		return responseentity;
 	}
 	
@@ -216,30 +212,31 @@ public class promotionProductController<promotionproduct> {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity delete(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionproduct/"+id, null, null, headToken);
+		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionbuyget/"+id, null, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.BAD_REQUEST);
 
-		PromotionProduct promotionproduct = promotionproductrepository.findOne(id);
-		promotionproductrepository.delete(promotionproduct);
+		PromotionBuyGet promotionbuyget = promotionbuygetrepository.findOne(id);
+		promotionbuygetrepository.delete(promotionbuyget);
 
-		return new ResponseEntity(getAPIResponse(null, promotionproduct, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
+		return new ResponseEntity(getAPIResponse(null, promotionbuyget, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
 
 	//update the list  to remove the given id and make it non-active
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/remove/{id}", method = RequestMethod.GET)
 	public ResponseEntity remove(@PathVariable Long id, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JSONException, ParseException, InterruptedException, ExecutionException, ApiException, InterruptedException, IOException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionProduct/remove/"+id, null, null, headToken);
+		JSONObject apiRequest = AccessToken.checkToken("GET", "/promotionbuyget/remove/"+id, null, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
-		JSONObject promotionProduct = new JSONObject();
-		promotionProduct.put("PROMOTIONPRODUCT_ID", id);
-		promotionProduct.put("isactive", "N");
+		JSONObject promotionBuyGet= new JSONObject();
+		promotionBuyGet.put("PROMOTIONBUYGET_ID", id);
+		promotionBuyGet.put("isactive", "N");
 
 
-		return insertupdateAll(null, promotionProduct, apiRequest);
+		return insertupdateAll(null, promotionBuyGet, apiRequest);
 	}
 
+	/*
 	// Calls a common method BySearch()
 	// true means → fetch only active records
 	@SuppressWarnings({ "rawtypes" })
@@ -260,7 +257,7 @@ public class promotionProductController<promotionproduct> {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ResponseEntity BySearch(String data, boolean active, String headToken, String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
-		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionproduct/search" + ((active == true) ? "" : "/all"), data, null, headToken);
+		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionbuyget/search" + ((active == true) ? "" : "/all"), data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.BAD_REQUEST);
 
 		JSONObject jsonObj = new JSONObject(data);
@@ -268,14 +265,14 @@ public class promotionProductController<promotionproduct> {
 		// If active == true  ,  Calls findBySearch() → active records only
 		// Else  ,   Calls findAllBySearch() → all records
 
-		List<PromotionProduct> promotionproducts = ((active == true)
+		List<PromotionBuyGet> promotionbuygets = ((active == true)
 
-				? promotionproductrepository.findBySearch("%" + jsonObj.getString("search") + "%")
-						: promotionproductrepository.findAllBySearch("%" + jsonObj.getString("search") + "%"));
+				? promotionbuygetrepository.findBySearch("%" + jsonObj.getString("search") + "%")
+						: promotionbuygetrepository.findAllBySearch("%" + jsonObj.getString("search") + "%"));
 
-		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
+		return new ResponseEntity(getAPIResponse(promotionbuygets, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
-
+*/
 	@SuppressWarnings({ "rawtypes" })
 	@RequestMapping(value = "/advancedsearch", method = RequestMethod.POST)
 	public ResponseEntity getByAdvancedSearch(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException {
@@ -293,7 +290,7 @@ public class promotionProductController<promotionproduct> {
 		JSONObject apiRequest = AccessToken.checkToken("POST", "/promotionproduct/advancedsearch" + ((active == true) ? "" : "/all"), data, null, headToken);
 		if (apiRequest.has("error")) return new ResponseEntity(apiRequest.toString(), HttpStatus.OK);
 
-		List<PromotionProduct> promotionproducts = new ArrayList<PromotionProduct>();
+		List<PromotionBuyGet> promotionbuygets = new ArrayList<PromotionBuyGet>();
 		JSONObject jsonObj = new JSONObject(data);
 		JSONArray searchObject = new JSONArray();
 
@@ -303,14 +300,14 @@ public class promotionProductController<promotionproduct> {
 		}
 		jsonObj.put("iswithdetail", false);
 
-		long promotion_ID=0, product_ID=0,productcategory_ID=0;
+		long promotion_ID=0, buyproduct_ID=0,getproduct_ID=0;
 		List<Integer> promotion_IDS = new ArrayList<Integer>(); 
-		List<Integer> product_IDS = new ArrayList<Integer>(); 
-		List<Integer> productcategory_IDS = new ArrayList<Integer>(); 
+		List<Integer> buyproduct_IDS = new ArrayList<Integer>(); 
+		List<Integer> getproduct_IDS = new ArrayList<Integer>(); 
 
 		promotion_IDS.add((int) 0);
-		product_IDS.add((int) 0);
-		productcategory_IDS.add((int) 0);
+		buyproduct_IDS.add((int) 0);
+		getproduct_IDS.add((int) 0);
 
 		if (jsonObj.has("promotion_ID") && !jsonObj.isNull("promotion_ID") && jsonObj.getLong("promotion_ID") != 0) {
 			promotion_ID = jsonObj.getLong("promotion_ID");
@@ -329,73 +326,76 @@ public class promotionProductController<promotionproduct> {
 			}
 		}
 
-		if (jsonObj.has("product_ID") && !jsonObj.isNull("product_ID") && jsonObj.getLong("product_ID") != 0) {
-			product_ID = jsonObj.getLong("product_ID");
-			product_IDS.add((int) product_ID);
+		if (jsonObj.has("buyproduct_ID") && !jsonObj.isNull("buyproduct_ID") && jsonObj.getLong("buyproduct_ID") != 0) {
+			buyproduct_ID = jsonObj.getLong("buyproduct_ID");
+			buyproduct_IDS.add((int) buyproduct_ID);
 
-		}  else if (jsonObj.has("product") && !jsonObj.isNull("product") && jsonObj.getLong("product") != 0) {
+		}  else if (jsonObj.has("buyproduct") && !jsonObj.isNull("buyproduct") && jsonObj.getLong("buyproduct") != 0) {
 			if (active == true) {
 				searchObject = new JSONArray(ServiceCall.POST("product/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
 			} else {
 				searchObject = new JSONArray(ServiceCall.POST("product/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
 			}
 
-			product_ID = searchObject.length();
+			buyproduct_ID = searchObject.length();
 			for (int i=0; i<searchObject.length(); i++) {
-				product_IDS.add((int) searchObject.getJSONObject(i).getLong("product_ID"));
+				buyproduct_IDS.add((int) searchObject.getJSONObject(i).getLong("buyproduct_ID"));
 			}
 		}
-		if (jsonObj.has("productcategory_ID") && !jsonObj.isNull("productcategory_ID") && jsonObj.getLong("productcategory_ID") != 0) {
-			productcategory_ID = jsonObj.getLong("productcategory_ID");
-			productcategory_IDS.add((int) productcategory_ID);
+		if (jsonObj.has("getproduct_ID") && !jsonObj.isNull("getproduct_ID") && jsonObj.getLong("getproduct_ID") != 0) {
+			getproduct_ID = jsonObj.getLong("product_ID");
+			getproduct_IDS.add((int) getproduct_ID);
 
-		}  else if (jsonObj.has("productcategory") && !jsonObj.isNull("productcategory") && jsonObj.getLong("productcategory") != 0) {
+		}  else if (jsonObj.has("getproduct") && !jsonObj.isNull("getproduct") && jsonObj.getLong("getproduct") != 0) {
 			if (active == true) {
-				searchObject = new JSONArray(ServiceCall.POST("productcategory/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
+				searchObject = new JSONArray(ServiceCall.POST("product/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
 			} else {
-				searchObject = new JSONArray(ServiceCall.POST("productcategory/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
+				searchObject = new JSONArray(ServiceCall.POST("product/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
 			}
 
-			productcategory_ID = searchObject.length();
+			getproduct_ID = searchObject.length();
 			for (int i=0; i<searchObject.length(); i++) {
-				product_IDS.add((int) searchObject.getJSONObject(i).getLong("productcategory_ID"));
+				getproduct_IDS.add((int) searchObject.getJSONObject(i).getLong("getproduct_ID"));
 			}
 		}
-		if (promotion_ID != 0 || product_ID != 0 || productcategory_ID!=0) {
-			promotionproducts = ((active == true)
-					? promotionproductrepository.findByAdvancedSearch(promotion_ID, promotion_IDS, product_ID, product_IDS,productcategory_ID,productcategory_IDS)
-							: promotionproductrepository.findAllByAdvancedSearch(promotion_ID, promotion_IDS, product_ID, product_IDS,productcategory_ID,productcategory_IDS));
+		
+		
+		if (promotion_ID != 0 || buyproduct_ID != 0 || getproduct_ID != 0) {
+			promotionbuygets = ((active == true)
+					? promotionbuygetrepository.findByAdvancedSearch(promotion_ID, promotion_IDS, buyproduct_ID, buyproduct_IDS, getproduct_ID, getproduct_IDS)
+							: promotionbuygetrepository.findAllByAdvancedSearch(promotion_ID, promotion_IDS, buyproduct_ID, buyproduct_IDS, getproduct_ID, getproduct_IDS));
 		}
-		return new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, isWithDetail).toString(), HttpStatus.OK);
+		return new ResponseEntity(getAPIResponse(promotionbuygets, null, null, null, null, apiRequest, isWithDetail).toString(), HttpStatus.OK);
 	}
 
 	//getAPI response Function
-	String getAPIResponse(List<PromotionProduct> promotionproducts, PromotionProduct promotionproduct, JSONArray Jsonpromotionproducts, JSONObject Jsonpromotionproduct, String message, JSONObject apiRequest, boolean isWithDetail) throws JSONException, JsonProcessingException, ParseException, InterruptedException, ExecutionException {
+	String getAPIResponse(List<PromotionBuyGet> promotionbuygets, PromotionBuyGet promotionbuyget, JSONArray Jsonpromotionbuygets, JSONObject Jsonpromotionbuyget, String message, JSONObject apiRequest, boolean isWithDetail) throws JSONException, JsonProcessingException, ParseException, InterruptedException, ExecutionException {
 		ObjectMapper mapper = new ObjectMapper();
 		String rtnAPIResponse="Invalid Resonse";
 
 		if (message != null) {
 			rtnAPIResponse = apiRequestLog.apiRequestErrorLog(apiRequest, "promotionproduct", message).toString();
 		} else  {
-			if ((promotionproducts != null || promotionproduct != null) && isWithDetail == true) {
-				if (promotionproduct != null) {
-					promotionproducts = new ArrayList<PromotionProduct>();
-					promotionproducts.add(promotionproduct);
+			if ((promotionbuygets != null || promotionbuyget != null) && isWithDetail == true) {
+				if (promotionbuyget != null) {
+					promotionbuygets= new ArrayList<PromotionBuyGet>();
+					promotionbuygets.add(promotionbuyget);
 				}
-				if (promotionproducts.size()>0) {
+				if (promotionbuygets.size()>0) {
 					List<Integer> promotionList = new ArrayList<Integer>();
-					List<Integer> productList = new ArrayList<Integer>();
-					List<Integer> productcategoryList = new ArrayList<Integer>();
+					List<Integer> buyproductList = new ArrayList<Integer>();
+					List<Integer> getproductList = new ArrayList<Integer>();
 
-					for (int i=0; i<promotionproducts.size(); i++) {
-						if (promotionproducts.get(i).getPROMOTION_ID() != null) {
-							promotionList.add(Integer.parseInt(promotionproducts.get(i).getPROMOTION_ID().toString()));
+
+					for (int i=0; i<promotionbuygets.size(); i++) {
+						if (promotionbuygets.get(i).getPROMOTION_ID() != null) {
+							promotionList.add(Integer.parseInt(promotionbuygets.get(i).getPROMOTION_ID().toString()));
 						}
-						if (promotionproducts.get(i).getPRODUCT_ID() != null) {
-							productList.add(Integer.parseInt(promotionproducts.get(i).getPRODUCT_ID().toString()));
+						if (promotionbuygets.get(i).getBUYPRODUCT_ID() != null) {
+							buyproductList.add(Integer.parseInt(promotionbuygets.get(i).getBUYPRODUCT_ID().toString()));
 						}
-						if (promotionproducts.get(i).getPRODUCTCATEGORY_ID() != null) {
-							productcategoryList.add(Integer.parseInt(promotionproducts.get(i).getPRODUCTCATEGORY_ID().toString()));
+						if (promotionbuygets.get(i).getGETPRODUCT_ID() != null) {
+							getproductList.add(Integer.parseInt(promotionbuygets.get(i).getGETPRODUCT_ID().toString()));
 						}
 					}
 
@@ -412,25 +412,25 @@ public class promotionProductController<promotionproduct> {
 						}
 					});
 
-					CompletableFuture<JSONArray> productFuture = CompletableFuture.supplyAsync(() -> {
-						if (productList.size() <= 0) {
+					CompletableFuture<JSONArray> buyproductFuture = CompletableFuture.supplyAsync(() -> {
+						if (buyproductList.size() <= 0) {
 							return new JSONArray();
 						}
 
 						try {
-							return new JSONArray(ServiceCall.POST("product/ids", "{products: "+productList+"}", apiRequest.getString("access_TOKEN"), true));
+							return new JSONArray(ServiceCall.POST("buyproduct/ids", "{buyproducts: "+buyproductList+"}", apiRequest.getString("access_TOKEN"), true));
 						} catch (JSONException | JsonProcessingException | ParseException e) {
 							e.printStackTrace();
 							return new JSONArray();
 						}
 					});
-					CompletableFuture<JSONArray> productcategoryFuture = CompletableFuture.supplyAsync(() -> {
-						if (productcategoryList.size() <= 0) {
+					CompletableFuture<JSONArray> getproductFuture = CompletableFuture.supplyAsync(() -> {
+						if (getproductList.size() <= 0) {
 							return new JSONArray();
 						}
 
 						try {
-							return new JSONArray(ServiceCall.POST("productcategory/ids", "{productcategories: "+productcategoryList+"}", apiRequest.getString("access_TOKEN"), true));
+							return new JSONArray(ServiceCall.POST("getproduct/ids", "{getproducts: "+getproductList+"}", apiRequest.getString("access_TOKEN"), true));
 						} catch (JSONException | JsonProcessingException | ParseException e) {
 							e.printStackTrace();
 							return new JSONArray();
@@ -438,58 +438,58 @@ public class promotionProductController<promotionproduct> {
 					});
 					// Wait until all futures complete
 					CompletableFuture<Void> allDone =
-							CompletableFuture.allOf(promotionFuture, productFuture,productcategoryFuture );
+							CompletableFuture.allOf(promotionFuture,buyproductFuture,getproductFuture);
 
 					// Block until all are done
 					allDone.join();
 
 					JSONArray  promotionObject = promotionFuture.get();
-					JSONArray productObject = productFuture.get();
-					JSONArray productcategoryObject = productcategoryFuture.get();
+					JSONArray buyproductObject = buyproductFuture.get();
+					JSONArray getproductObject = getproductFuture.get();
 
-					for (int i=0; i<promotionproducts.size(); i++) {
+					for (int i=0; i<promotionbuygets.size(); i++) {
 						for (int j=0; j<promotionObject.length(); j++) {
 							JSONObject promotion = promotionObject.getJSONObject(j);
-							if (promotionproducts.get(i).getPROMOTION_ID() != null && promotionproducts.get(i).getPROMOTION_ID() == promotion.getLong("PROMOTION_ID") ) {
-								promotionproducts.get(i).setPROMOTION_DETAIL(promotion.toString());
+							if (promotionbuygets.get(i).getPROMOTION_ID() != null && promotionbuygets.get(i).getPROMOTION_ID() == promotion.getLong("PROMOTION_ID") ) {
+								promotionbuygets.get(i).setPROMOTION_DETAIL(promotion.toString());
 							}
 						}
-						for (int j=0; j<productObject.length(); j++) {
-							JSONObject product = productObject.getJSONObject(j);
-							if (promotionproducts.get(i).getPRODUCT_ID() != null && promotionproducts.get(i).getPRODUCT_ID() == product.getLong("PRODUCT_ID") ) {
-								promotionproducts.get(i).setPRODUCT_DETAIL(product.toString());
+						for (int j=0; j<buyproductObject.length(); j++) {
+							JSONObject buyproduct = buyproductObject.getJSONObject(j);
+							if (promotionbuygets.get(i).getBUYPRODUCT_ID() != null && promotionbuygets.get(i).getBUYPRODUCT_ID() == buyproduct.getLong("BUYPRODUCT_ID") ) {
+								promotionbuygets.get(i).setBUYPRODUCT_DETAIL(buyproduct.toString());
 							}
 						}
-						for (int j=0; j<productcategoryObject.length(); j++) {
-							JSONObject productcategory = productcategoryObject.getJSONObject(j);
-							if (promotionproducts.get(i).getPRODUCTCATEGORY_ID() != null && promotionproducts.get(i).getPRODUCTCATEGORY_ID() == productcategory.getLong("PRODUCTCATEGORY_ID") ) {
-								promotionproducts.get(i).setPRODUCTCATEGORY_DETAIL(productcategory.toString());
+						for (int j=0; j<getproductObject.length(); j++) {
+							JSONObject getproduct = getproductObject.getJSONObject(j);
+							if (promotionbuygets.get(i).getGETPRODUCT_ID() != null && promotionbuygets.get(i).getGETPRODUCT_ID() == getproduct.getLong("GETPRODUCT_ID") ) {
+								promotionbuygets.get(i).setGETPRODUCT_DETAIL(getproduct.toString());
 							}
 						}
 					}
 				}
 
-				if (promotionproduct != null)
-					rtnAPIResponse = mapper.writeValueAsString(promotionproducts.get(0));
+				if (promotionbuyget != null)
+					rtnAPIResponse = mapper.writeValueAsString(promotionbuygets.get(0));
 				else
-					rtnAPIResponse = mapper.writeValueAsString(promotionproducts);
+					rtnAPIResponse = mapper.writeValueAsString(promotionbuygets);
 
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (promotionproduct != null && isWithDetail == false) {
-				rtnAPIResponse = mapper.writeValueAsString(promotionproduct);
+			} else if (promotionbuyget != null && isWithDetail == false) {
+				rtnAPIResponse = mapper.writeValueAsString(promotionbuyget);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (promotionproducts != null && isWithDetail == false) {
-				rtnAPIResponse = mapper.writeValueAsString(promotionproducts);
+			} else if (promotionbuygets != null && isWithDetail == false) {
+				rtnAPIResponse = mapper.writeValueAsString(promotionbuygets);
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (Jsonpromotionproducts != null) {
-				rtnAPIResponse = Jsonpromotionproducts.toString();
+			} else if (Jsonpromotionbuygets != null) {
+				rtnAPIResponse = Jsonpromotionbuygets.toString();
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
-			} else if (Jsonpromotionproduct != null) {
-				rtnAPIResponse = mapper.writeValueAsString(Jsonpromotionproduct.toString());
+			} else if (Jsonpromotionbuyget != null) {
+				rtnAPIResponse = mapper.writeValueAsString(Jsonpromotionbuyget.toString());
 				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 			}
 		}
