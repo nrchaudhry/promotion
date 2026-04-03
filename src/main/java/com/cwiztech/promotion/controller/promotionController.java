@@ -44,7 +44,7 @@ public class promotionController {
 
 	@Autowired
 	private promotionRepository promotionrepository;
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<String> get(@RequestHeader(value = "Authorization") String headToken,
@@ -57,7 +57,7 @@ public class promotionController {
 
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/all", method = RequestMethod.GET)
 	public ResponseEntity getAll(@RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant) throws JsonProcessingException, JSONException, ParseException, InterruptedException, ExecutionException, InterruptedException, ExecutionException {
@@ -99,7 +99,7 @@ public class promotionController {
 
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, true).toString(), HttpStatus.OK);
 	}
-                     
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity insert(@RequestBody String data, @RequestHeader(value = "Authorization") String headToken, @RequestHeader(value = "LimitGrant") String LimitGrant)
@@ -185,18 +185,18 @@ public class promotionController {
 			} else if (id == 0) {
 				JSONObject promotiontype = new JSONObject(ServiceCall.POST("lookup/bycode", "{entityname: 'PROMOTIONTYPE', code: 'DISCOUNT'}", apiRequest.getString("access_TOKEN"), true));
 				if (promotiontype != null)
-				promotion.setPROMOTIONTYPE_ID(promotiontype.getLong("id"));
+					promotion.setPROMOTIONTYPE_ID(promotiontype.getLong("id"));
 			}
-			
+
 			if (jsonObj.has("discounttype_ID") && !jsonObj.isNull("discounttype_ID"))
 				promotion.setDISCOUNTTYPE_ID(jsonObj.getLong("discounttype_ID"));
 
 			if (jsonObj.has("discount_VALUE") && !jsonObj.isNull("discount_VALUE"))
 				promotion.setDISCOUNT_VALUE(BigDecimal.valueOf(jsonObj.getLong("discount_VALUE")));
-			
+
 			if (jsonObj.has("minorder_AMOUNT") && !jsonObj.isNull("minorder_AMOUNT"))
 				promotion.setMINORDER_AMOUNT(BigDecimal.valueOf(jsonObj.getLong("minorder_AMOUNT")));
-			
+
 			if (jsonObj.has("maxorder_AMOUNT") && !jsonObj.isNull("maxorder_AMOUNT"))
 				promotion.setMAXORDER_AMOUNT(BigDecimal.valueOf(jsonObj.getLong("maxorder_AMOUNT")));
 
@@ -205,10 +205,10 @@ public class promotionController {
 
 			if (jsonObj.has("promotionend_DATE") && !jsonObj.isNull("promotionend_DATE"))
 				promotion.setPROMOTIONEND_DATE(jsonObj.getString("promotionend_DATE"));
-			
+
 			if (jsonObj.has("coupon_CODE") && !jsonObj.isNull("coupon_CODE"))
 				promotion.setCOUPON_CODE(jsonObj.getString("coupon_CODE"));
-			
+
 
 			if (id == 0)
 				promotion.setISACTIVE("Y");
@@ -360,33 +360,24 @@ public class promotionController {
 			if (promotiontype != null)
 				promotiontype_ID = promotiontype.getLong("id");
 		}
-		
+
 		if (jsonObj.has("discounttype_ID") && !jsonObj.isNull("discounttype_ID") && jsonObj.getLong("discounttype_ID") != 0) {
 			discounttype_ID = jsonObj.getLong("discounttype_ID");
-			discounttype_IDS.add((int) discounttype_ID);
-
-		}  else if (jsonObj.has("discounttype") && !jsonObj.isNull("discounttype") && jsonObj.getLong("discounttype") != 0) {
-			if (active == true) {
-				searchObject = new JSONArray(ServiceCall.POST("discounttype/advancedsearch", jsonObj.toString().replace("\"", "'"), headToken, true));
-			} else {
-				searchObject = new JSONArray(ServiceCall.POST("discounttype/advancedsearch/all", jsonObj.toString().replace("\"", "'"), headToken, true));
-			}
-
-			discounttype_ID = searchObject.length();
-			for (int i=0; i<searchObject.length(); i++) {
-				discounttype_IDS.add((int) searchObject.getJSONObject(i).getLong("discounttype_ID"));
-			}
+		} 	else if (jsonObj.has("discounttype_CODE") && !jsonObj.isNull("discounttype_CODE")) {
+			JSONObject discounttype = new JSONObject(ServiceCall.POST("lookup/bycode", "{entityname: 'PAYMENTTYPE', code: "+jsonObj.getString("discounttype_CODE")+"}", apiRequest.getString("access_TOKEN"), true));
+			if (discounttype != null)
+				discounttype_ID = discounttype.getLong("id");
 		}
-		
+
 		if (promotiontype_ID != 0 || discounttype_ID != 0 ) {
 			promotions = ((active == true)
-					? promotionrepository.findByAdvancedSearch(promotiontype_ID, discounttype_ID, discounttype_IDS,promotionstartdate,promotionstart_DATEFROM,promotionstart_DATETO, promotionenddate, promotionend_DATEFROM, promotionend_DATETO)
-							: promotionrepository.findAllByAdvancedSearch(promotiontype_ID, discounttype_ID, discounttype_IDS, promotionstartdate, promotionstart_DATEFROM, promotionstart_DATETO, promotionenddate, promotionend_DATEFROM, promotionend_DATETO));
+					? promotionrepository.findByAdvancedSearch(promotiontype_ID, discounttype_ID, promotionstartdate, promotionstart_DATEFROM,promotionstart_DATETO, promotionenddate, promotionend_DATEFROM, promotionend_DATETO)
+							: promotionrepository.findAllByAdvancedSearch(promotiontype_ID, discounttype_ID, promotionstartdate, promotionstart_DATEFROM, promotionstart_DATETO, promotionenddate, promotionend_DATEFROM, promotionend_DATETO));
 		}
 		return new ResponseEntity(getAPIResponse(promotions, null, null, null, null, apiRequest, isWithDetail).toString(), HttpStatus.OK);
 	}
 
-	
+
 	String getAPIResponse(List<Promotion> promotions, Promotion promotion, JSONArray Jsonpromotions,
 			JSONObject Jsonpromotion, String message, JSONObject apiRequest, boolean isWithDetail)
 					throws JSONException, JsonProcessingException, ParseException, InterruptedException, ExecutionException {
@@ -402,92 +393,69 @@ public class promotionController {
 					promotions = new ArrayList<Promotion>();
 					promotions.add(promotion);
 				}
-				
+
 				if (promotions.size()>0) {
-					List<Integer> discounttypeList = new ArrayList<Integer>();
 					List<Integer> lookupList = new ArrayList<Integer>();
-					
+
 					for (int i=0; i<promotions.size(); i++) {
 						if (promotions.get(i).getDISCOUNTTYPE_ID() != null) {
-							discounttypeList.add(Integer.parseInt(promotions.get(i).getDISCOUNTTYPE_ID().toString()));
+							lookupList.add(Integer.parseInt(promotions.get(i).getDISCOUNTTYPE_ID().toString()));
 						}
 						if (promotions.get(i).getPROMOTIONTYPE_ID() != null) {
 							lookupList.add(Integer.parseInt(promotions.get(i).getPROMOTIONTYPE_ID().toString()));
 						}
 					}
-					
-					CompletableFuture<JSONArray> discounttypeFuture = CompletableFuture.supplyAsync(() -> {
-						if (discounttypeList.size() <= 0) {
-							return new JSONArray();
-						}
-
-						try {
-							return new JSONArray(ServiceCall.POST("discounttype/ids", "{discounttypes: "+discounttypeList+"}", apiRequest.getString("access_TOKEN"), true));
-						} catch (JSONException | JsonProcessingException | ParseException e) {
-							e.printStackTrace();
-							return new JSONArray();
-						}
-					});
 
 					CompletableFuture<JSONArray> lookupFuture = CompletableFuture.supplyAsync(() -> {
 						try {
 							return new JSONArray(ServiceCall.POST("lookup/ids", "{lookups: "+lookupList+"}", apiRequest.getString("access_TOKEN"), true));
 						} catch (JSONException | JsonProcessingException | ParseException e) {
 							e.printStackTrace();
-						    return new JSONArray();
+							return new JSONArray();
 						}
 					});
-					
+
 					// Wait until all futures complete
-			        CompletableFuture<Void> allDone =
-			                CompletableFuture.allOf(discounttypeFuture,lookupFuture);
+					CompletableFuture<Void> allDone =
+							CompletableFuture.allOf(lookupFuture);
 
-			        // Block until all are done
-			        allDone.join();
-			        
-			        JSONArray discounttypeObject = discounttypeFuture.get();
-			        JSONArray lookups = lookupFuture.get();
-			        
-			        for (int i=0; i<promotions.size(); i++) {
-			        	for (int j=0; j<discounttypeObject.length(); j++) {
-							JSONObject discounttype = discounttypeObject.getJSONObject(j);
-							if (promotions.get(i).getDISCOUNTTYPE_ID() != null && promotions.get(i).getDISCOUNTTYPE_ID() == discounttype.getLong("DISCOUNTTYPE_ID") ) {
+					// Block until all are done
+					allDone.join();
 
-								promotions.get(i).setDISCOUNTTYPE_DETAIL(discounttype.toString());
+					JSONArray lookups = lookupFuture.get();
+
+					for (int i=0; i<promotions.size(); i++) {
+						for (int j=0; j<lookups.length(); j++) {
+							if (promotions.get(i).getDISCOUNTTYPE_ID() != null && promotions.get(i).getDISCOUNTTYPE_ID() == lookups.getJSONObject(j).getLong("id")) {
+								promotions.get(i).setDISCOUNTTYPE_DETAIL(lookups.getJSONObject(j).toString());
 							}
-						}
-			        	
-			        	for (int j=0; j<lookups.length(); j++) {
-			        		if (promotions.get(i).getPROMOTIONTYPE_ID() != null && promotions.get(i).getPROMOTIONTYPE_ID() == lookups.getJSONObject(j).getLong("id") ) {
+
+							if (promotions.get(i).getPROMOTIONTYPE_ID() != null && promotions.get(i).getPROMOTIONTYPE_ID() == lookups.getJSONObject(j).getLong("id")) {
 								promotions.get(i).setPROMOTIONTYPE_DETAIL(lookups.getJSONObject(j).toString());
 							}
-			        		}
-			        }
+						}
+					}
 				}
-				
+
 				if (promotion != null)
 					rtnAPIResponse = mapper.writeValueAsString(promotions.get(0));
 				else
 					rtnAPIResponse = mapper.writeValueAsString(promotions);
-				
-				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (promotions != null && isWithDetail== false) {
 				rtnAPIResponse = mapper.writeValueAsString(promotions);
-				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (promotion != null && isWithDetail == false) {
 				rtnAPIResponse = mapper.writeValueAsString(promotion);
-				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (Jsonpromotions != null ) {
 				rtnAPIResponse = mapper.writeValueAsString(promotions);
-				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 
 			} else if (Jsonpromotion != null) {
 				rtnAPIResponse = Jsonpromotion.toString();
-				apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 			}
+
+			apiRequestLog.apiRequestSaveLog(apiRequest, rtnAPIResponse, "Success");
 		}
 
 		return rtnAPIResponse;
