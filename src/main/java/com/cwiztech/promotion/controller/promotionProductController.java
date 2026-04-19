@@ -134,7 +134,7 @@ public class promotionProductController<promotionproduct> {
 		return insertupdateAll(null, jsonObj, apiRequest);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
 	public ResponseEntity insertupdateAll(JSONArray jsonpromotionproducts, JSONObject jsonpromotionproduct, JSONObject apiRequest) throws JSONException, ParseException, InterruptedException, ExecutionException, ApiException, InterruptedException, IOException, ExecutionException {
 		SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
@@ -208,6 +208,7 @@ public class promotionProductController<promotionproduct> {
 			responseentity = new ResponseEntity(getAPIResponse(null, promotionproducts.get(0), null, null, null, apiRequest, true), HttpStatus.OK);
 		else
 			responseentity = new ResponseEntity(getAPIResponse(promotionproducts, null, null, null, null, apiRequest, true), HttpStatus.OK);
+
 		return responseentity;
 	}
 	
@@ -451,21 +452,21 @@ public class promotionProductController<promotionproduct> {
 					for (int i=0; i<promotionproducts.size(); i++) {
 						for (int j=0; j<promotionObject.length(); j++) {
 							JSONObject promotion = promotionObject.getJSONObject(j);
-							if (promotionproducts.get(i).getPROMOTION_ID() != null && promotionproducts.get(i).getPROMOTION_ID() == promotion.getLong("PROMOTION_ID") ) {
+							if (promotionproducts.get(i).getPROMOTION_ID() != null && promotionproducts.get(i).getPROMOTION_ID() == promotion.getLong("promotion_ID") ) {
 
 								promotionproducts.get(i).setPROMOTION_DETAIL(promotion.toString());
 							}
 						}
 						for (int j=0; j<productObject.length(); j++) {
 							JSONObject product = productObject.getJSONObject(j);
-							if (promotionproducts.get(i).getPRODUCT_ID() != null && promotionproducts.get(i).getPRODUCT_ID() == product.getLong("PRODUCT_ID") ) {
+							if (promotionproducts.get(i).getPRODUCT_ID() != null && promotionproducts.get(i).getPRODUCT_ID() == product.getLong("product_ID") ) {
 
 								promotionproducts.get(i).setPRODUCT_DETAIL(product.toString());
 							}
 						}
 						for (int j=0; j<productcategoryObject.length(); j++) {
 							JSONObject productcategory = productcategoryObject.getJSONObject(j);
-							if (promotionproducts.get(i).getPRODUCTCATEGORY_ID() != null && promotionproducts.get(i).getPRODUCTCATEGORY_ID() == productcategory.getLong("PRODUCTCATEGORY_ID") ) {
+							if (promotionproducts.get(i).getPRODUCTCATEGORY_ID() != null && promotionproducts.get(i).getPRODUCTCATEGORY_ID() == productcategory.getLong("productcategory_ID") ) {
 								promotionproducts.get(i).setPRODUCTCATEGORY_DETAIL(productcategory.toString());
 							}
 						}
